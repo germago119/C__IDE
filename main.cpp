@@ -1,6 +1,14 @@
 #include <iostream>
+#include <QtWidgets>
+#include "MainWindow.hpp"
 
-int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+
+int main(int argc, char *argv[]) {
+    QApplication a(argc, argv);
+
+    MainWindow window;
+
+    window.show();
+
+    return a.exec();
 }
