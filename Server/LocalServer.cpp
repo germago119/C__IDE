@@ -60,3 +60,4 @@ QLocalSocket* LocalServer::getSocket(){
     return clientSocket;
 }
 
+

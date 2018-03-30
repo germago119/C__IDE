@@ -6,41 +6,38 @@
 #define C_IDE_MAINWINDOW_HPP
 
 
+#include <QMainWindow>
 #include <QtWidgets>
+#include <QDebug>
+#include <QLocalSocket>
 #include "Server/LocalServer.h"
 
+
+namespace Ui {
+    class MainWindow;
+}
+
 class MainWindow : public QMainWindow {
+Q_OBJECT
 
 public:
+    explicit MainWindow(QWidget *parent = nullptr);
 
-    MainWindow();
+    ~MainWindow();
 
 private:
-    LocalServer *server;
+    Ui::MainWindow *ui;
+    void startServer();
     QLocalSocket *socket;
+    LocalServer *server;
+    void client_send(const QString &msg);
+    void client_read();
+    void server_send(const QString &msg);
+    void server_read();
 
 private slots:
 
-    QWidget *centralWidget;
-
-    QVBoxLayout *vLayout;
-
-    QPlainTextEdit *editor;
-
-    QLabel *stdOut;
-
-    QLabel *applicationLog;
-
-    QTableView *tableView;
-
-    QToolBar *toolbar;
-
-    QPushButton *connectBtn;
-
-    int const windowWidth = 800;
-
-    int const windowHeight = 600;
-    void connectToServer();
+    void on_runBtn_clicked();
 
 };
 
