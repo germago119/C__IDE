@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QLocalSocket>
 #include "Server/LocalServer.h"
+#include "Server/loguru.hpp"
 
 
 namespace Ui {

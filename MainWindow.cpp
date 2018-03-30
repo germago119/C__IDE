@@ -30,10 +30,10 @@ void MainWindow::startServer() {
     //inicia el server
     if(!server ->listen("mserver"))
     {
-        //LOG_F(INFO, "Can't connect to server.");
+        LOG_F(INFO, "Can't connect to server.");
         QMessageBox::critical(this, "Error", server->errorString());
     }else{
-        //LOG_F(INFO, "Started server.");
+        LOG_F(INFO, "Started server.");
         QMessageBox::information(this, "Server", "Servido iniciado");
         //conecta la señal readyRead del socket para mostrar el mensaje que recibe
         connect(socket, &QLocalSocket::readyRead, [&](){

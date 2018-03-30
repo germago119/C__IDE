@@ -5,8 +5,7 @@
 #ifndef C_IDE_LOCALSERVER_H
 #define C_IDE_LOCALSERVER_H
 
-//#define LOGURU_IMPLEMENTATION 1
-//#include "Server/loguru.hpp"
+#include "Server/loguru.hpp"
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QTextStream>
