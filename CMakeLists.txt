@@ -17,8 +17,8 @@ find_package(Qt5PrintSupport REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(Qt5Sql REQUIRED)
 
-#qt5_wrap_ui( UI_HEADERS mainwindow.ui )
-qt5_wrap_ui(UI_GENERATED_HEADERS ${UI_SOURCES})
+qt5_wrap_ui(UI_HEADERS mainwindow.ui)
+#qt5_wrap_ui(UI_GENERATED_HEADERS ${UI_SOURCES})
 
 #qt5_add_resources( QRCS resources.qrc )
 add_executable(C__IDE main.cpp MainWindow.cpp MainWindow.hpp NetSocket.cpp NetSocket.hpp NetServer.cpp NetServer.hpp)
