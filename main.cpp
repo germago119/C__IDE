@@ -3,6 +3,8 @@
 #include "MainWindow.hpp"
 #define LOGURU_IMPLEMENTATION 1
 #include "Server/loguru.hpp"
+#include "CodeEditor.hpp"
+
 
 int main(int argc, char *argv[]) {
     loguru::init(argc, argv);
@@ -11,5 +13,9 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     MainWindow window;
     window.show();
+
+//    CodeEditor editor;
+//    editor.show();
+
     return a.exec();
 }
