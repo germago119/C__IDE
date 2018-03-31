@@ -111,16 +111,14 @@ MainWindow::MainWindow() {
     //Server Stuff
     server = new LocalServer(this);
     socket = new QLocalSocket(this);
+    currentLine = 0;
 }
 
 MainWindow::~MainWindow() {
+    server->removeServer("mserver");
     delete server;
     delete socket;
-
     delete codeEditor;
-
-
-
 }
 
 //METODO DEL BOTON RUN
@@ -131,7 +129,15 @@ void MainWindow::runBtnHandler() {
 
 void MainWindow::clearBtnHnadler() {
     qDebug() << "IT WILL CLEAR";
+    startDebug();
+}
 
+void MainWindow::startDebug() {
+    QStringList lines = codeEditor->toPlainText().split('\n', QString::SkipEmptyParts);
+    //if(currentLine != ) {
+        client_send(lines.at(currentLine));
+        currentLine += 1;
+    //}
 }
 
 
@@ -143,8 +149,10 @@ void MainWindow::startServer() {
         QMessageBox::critical(this, "Error", server->errorString());
     }else{
         LOG_F(INFO, "Started server.");
-        QMessageBox::information(this, "Server", "Servido iniciado");
+        currentLine = 0;
+        //QMessageBox::information(this, "Server", "Servido iniciado");
         //conecta la señal readyRead del socket para mostrar el mensaje que recibe
+        socket->connectToServer("mserver");
         connect(socket, &QLocalSocket::readyRead, [&](){
             client_read();
         });
@@ -197,4 +205,9 @@ void MainWindow::server_send(const QString &msg) {
     else{
         std::cout << "No client connected" << std::endl;
     }
+}
+
+QString MainWindow::getLine(int lineNum) {
+    QStringList lines = codeEditor->toPlainText().split('\n', QString::SkipEmptyParts);
+    return lines.at(lineNum);
 }

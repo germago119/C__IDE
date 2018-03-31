@@ -42,15 +42,18 @@ private:
 
     QPushButton *clearBtn;
 
-
     //SERVER STUFF
-    void startServer();
+
     QLocalSocket *socket;
     LocalServer *server;
     void client_send(const QString &msg);
     void client_read();
     void server_send(const QString &msg);
     void server_read();
+    QString getLine(int);
+    void startDebug();
+    int currentLine;
+    void startServer();
 
 
 private slots:
