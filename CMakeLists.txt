@@ -21,7 +21,7 @@ find_package(Qt5Sql REQUIRED)
 #qt5_wrap_ui(UI_GENERATED_HEADERS ${UI_SOURCES})
 
 #qt5_add_resources( QRCS resources.qrc )
-add_executable(C__IDE main.cpp MainWindow.cpp MainWindow.hpp NetSocket.cpp NetSocket.hpp NetServer.cpp NetServer.hpp Server/LocalServer.cpp CodeEditor.cpp CodeEditor.hpp)
+add_executable(C__IDE main.cpp MainWindow.cpp MainWindow.hpp NetSocket.cpp NetSocket.hpp NetServer.cpp NetServer.hpp Server/LocalServer.cpp CodeEditor.cpp CodeEditor.hpp Highlighter.cpp Highlighter.hpp)
 target_link_libraries(C__IDE Qt5::Widgets Qt5::Core Qt5::Network Qt5::Sql Qt5::OpenGL)
 
 #Necesario para libreria de logging

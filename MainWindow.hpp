@@ -12,6 +12,7 @@
 #include "Server/LocalServer.h"
 #include "Server/loguru.hpp"
 #include "CodeEditor.hpp"
+#include "Highlighter.hpp"
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -41,6 +42,9 @@ private:
     QPushButton *runBtn;
 
     QPushButton *clearBtn;
+
+    Highlighter *highlighter;
+
 
     //SERVER STUFF
 

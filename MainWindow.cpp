@@ -11,7 +11,12 @@ MainWindow::MainWindow() {
     auto const wWidth{1000};
     auto const wHeight{750};
 
+    //Set up CodeEditor
     codeEditor = new CodeEditor();
+
+    //Set up Highlighter
+    highlighter = new Highlighter(codeEditor->document());
+
     ramview = new QTableView();
     centralWidget = new QWidget();
     auto *applogWidget = new QWidget();
@@ -50,6 +55,11 @@ MainWindow::MainWindow() {
 
     QFont applogf("Roboto Slab", 14);
     apploglabel->setFont(applogf);
+
+    //Set up Font for CodeEditor
+    QFont codef("Source Code Pro", 12);
+    codeEditor->setFont(codef);
+
 
 
     //Set sizes
@@ -108,6 +118,18 @@ MainWindow::MainWindow() {
 
     this->resize(wWidth, wHeight);
 
+    codeEditor->setPlainText("hello\n"
+                             "hi\n"
+                             "hola\n"
+                             "hhh");
+
+    QStringList lines = codeEditor->toPlainText()
+            .split('\n', QString::SkipEmptyParts);
+    if (lines.count() > 3)
+        qDebug() << "fourth line:" << lines.at(3);
+
+
+
     //Server Stuff
     server = new LocalServer(this);
     socket = new QLocalSocket(this);
@@ -124,7 +146,10 @@ MainWindow::~MainWindow() {
 //METODO DEL BOTON RUN
 void MainWindow::runBtnHandler() {
     qDebug() << "IT RUN";
-    startServer();
+    //startServer();
+
+
+
 }
 
 void MainWindow::clearBtnHnadler() {
