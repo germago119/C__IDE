@@ -20,7 +20,7 @@ class Highlighter : public QSyntaxHighlighter {
 Q_OBJECT
 
 public:
-    Highlighter(QTextDocument *parent = 0);
+    explicit Highlighter(QTextDocument *parent = nullptr);
 
 protected:
     void highlightBlock(const QString &text) override;
@@ -41,6 +41,9 @@ private:
     QTextCharFormat multiLineCommentFormat;
     QTextCharFormat quotationFormat;
     QTextCharFormat functionFormat;
+    QTextCharFormat parentesisFormat;
+    QTextCharFormat numberFormat;
+    QTextCharFormat curlyFormat;
 };
 
 

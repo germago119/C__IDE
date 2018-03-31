@@ -57,7 +57,7 @@ MainWindow::MainWindow() {
     apploglabel->setFont(applogf);
 
     //Set up Font for CodeEditor
-    QFont codef("Source Code Pro", 12);
+    QFont codef("Source Code Pro", 18);
     codeEditor->setFont(codef);
 
 
@@ -131,6 +131,9 @@ MainWindow::MainWindow() {
 
 */
 
+    codeEditor->setPlainText(
+            "//\n//  main.cpp\\n//  Test\n//\n//  Created by Roger Valderrama\n//\n#include <iostream>\nint main(int argc, const char * argv[]) {\n// insert code here...\nstd::cout << ""Hello World\n"";\nreturn 0;\n}\nint a = 5;\nlong b = 8;\n char c = 'c';\n float f = 4.0;\n double z = 2.0;\nstruct a {};\nreference<a>;\nvoid getAddr();\nvoid getValue();\nvoid print();\n\"dandelion\"");
+
 
     //Server Stuff
     server = new LocalServer(this);
@@ -150,10 +153,8 @@ void MainWindow::runBtnHandler() {
     qDebug() << "IT RUN";
     startServer();
 
-
     auto count = codeEditor->document()->blockCount();
     qDebug() << count;
-
 
 }
 
