@@ -167,7 +167,7 @@ void MainWindow::startDebug() {
     //if(currentLine != ) {
         client_send(lines.at(currentLine));
         currentLine += 1;
-    //}
+}
 
 
 void MainWindow::startServer() {
