@@ -149,7 +149,8 @@ MainWindow::~MainWindow() {
 void MainWindow::runBtnHandler() {
     qDebug() << "IT RUN";
     //startServer();
-
+    auto count = codeEditor->document()->blockCount();
+    qDebug() << count;
 
 
 }
