@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QLocalSocket>
 #include "Server/LocalServer.h"
+#include "Server/loguru.hpp"
 #include "CodeEditor.hpp"
 #include "Highlighter.hpp"
 
@@ -46,13 +47,17 @@ private:
 
 
     //SERVER STUFF
-    void startServer();
+
     QLocalSocket *socket;
     LocalServer *server;
     void client_send(const QString &msg);
     void client_read();
     void server_send(const QString &msg);
     void server_read();
+    QString getLine(int);
+    void startDebug();
+    int currentLine;
+    void startServer();
 
 
 private slots:

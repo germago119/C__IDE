@@ -19,7 +19,6 @@ class QWidget;
 
 class LineNumberArea;
 
-
 class CodeEditor : public QPlainTextEdit {
 Q_OBJECT
 
