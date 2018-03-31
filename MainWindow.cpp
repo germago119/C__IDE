@@ -118,6 +118,7 @@ MainWindow::MainWindow() {
 
     this->resize(wWidth, wHeight);
 
+/*
     codeEditor->setPlainText("hello\n"
                              "hi\n"
                              "hola\n"
@@ -128,6 +129,7 @@ MainWindow::MainWindow() {
     if (lines.count() > 3)
         qDebug() << "fourth line:" << lines.at(3);
 
+*/
 
 
     //Server Stuff
@@ -146,10 +148,7 @@ MainWindow::~MainWindow() {
 //METODO DEL BOTON RUN
 void MainWindow::runBtnHandler() {
     qDebug() << "IT RUN";
-    //startServer();
-
-
-
+    startServer();
 }
 
 void MainWindow::clearBtnHnadler() {
@@ -222,14 +221,15 @@ void MainWindow::server_read() {
 }
 
 void MainWindow::server_send(const QString &msg) {
-    if(socket){
+    server->send(msg);
+    /*if(socket){
         QTextStream T(socket);
         T << msg;
         socket->flush();
     }
     else{
         std::cout << "No client connected" << std::endl;
-    }
+    }*/
 }
 
 QString MainWindow::getLine(int lineNum) {

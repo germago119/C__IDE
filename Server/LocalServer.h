@@ -20,8 +20,6 @@ public:
     explicit LocalServer(QObject *parent = 0);
     void send(const QString &msg);
     void read();
-    QLocalSocket* getSocket();
-
 private:
     QLocalSocket *clientSocket;
 

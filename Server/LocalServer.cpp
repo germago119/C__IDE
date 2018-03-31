@@ -26,12 +26,10 @@ void LocalServer::send(const QString &msg)
     }
     else{
         LOG_F(INFO, "Send failed. No client connected");
-        std::cout << "Nadie conectado" << std::endl;
     }
 }
 
 void LocalServer::read(){
-    std::cout << "Entering message received" << std::endl;
     LOG_F(INFO, "Reading incoming message.");
 
     if(clientSocket->bytesAvailable() > 0){
@@ -54,11 +52,6 @@ void LocalServer::read(){
     }
 
     LOG_F(INFO, "No message to read.");
-    std::cout << "Nothing to read" << std::endl;
-}
-
-QLocalSocket* LocalServer::getSocket(){
-    return clientSocket;
 }
 
 
