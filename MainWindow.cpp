@@ -28,7 +28,7 @@ MainWindow::MainWindow() {
     auto *applogVLayout = new QVBoxLayout();
 
     //Labels
-    applicationLog = new QLabel();
+    applicationLog = new QTextBrowser();
     stdOut = new QLabel();
     auto *apploglabel = new QLabel("Application Log");
     auto *ramlivelabel = new QLabel("RAM Live View");
@@ -39,7 +39,7 @@ MainWindow::MainWindow() {
 
     //Connect Btns
     connect(runBtn, SIGNAL(clicked()), this, SLOT(runBtnHandler()));
-    connect(clearBtn, SIGNAL(clicked()), this, SLOT(clearBtnHnadler()));
+    connect(clearBtn, SIGNAL(clicked()), this, SLOT(clearBtnHandler()));
 
     //Splitters
     auto *verticalSplitter = new QSplitter(Qt::Orientation::Vertical);
@@ -131,9 +131,10 @@ MainWindow::MainWindow() {
 
 */
 
-    codeEditor->setPlainText(
-            "//\n//  main.cpp\\n//  Test\n//\n//  Created by Roger Valderrama\n//\n#include <iostream>\nint main(int argc, const char * argv[]) {\n// insert code here...\nstd::cout << ""Hello World\n"";\nreturn 0;\n}\nint a = 5;\nlong b = 8;\n char c = 'c';\n float f = 4.0;\n double z = 2.0;\nstruct a {};\nreference<a>;\nvoid getAddr();\nvoid getValue();\nvoid print();\n\"dandelion\"");
+    // codeEditor->setPlainText("//\n//  main.cpp\\n//  Test\n//\n//  Created by Roger Valderrama\n//\n#include <iostream>\nint main(int argc, const char * argv[]) {\n// insert code here...\nstd::cout << ""Hello World\n"";\nreturn 0;\n}\nint a = 5;\nlong b = 8;\n char c = 'c';\n float f = 4.0;\n double z = 2.0;\nstruct a {};\nreference<a>;\nvoid getAddr();\nvoid getValue();\nvoid print();\n\"dandelion\"");
 
+
+    updateAppLog();
 
     //Server Stuff
     server = new LocalServer(this);
@@ -156,11 +157,13 @@ void MainWindow::runBtnHandler() {
     auto count = codeEditor->document()->blockCount();
     qDebug() << count;
 
+    updateAppLog();
 }
 
-void MainWindow::clearBtnHnadler() {
-    qDebug() << "IT WILL CLEAR";
-    startDebug();
+//METODO DEL BOTON CLEAR
+void MainWindow::clearBtnHandler() {
+    applicationLog->clear();
+    //startDebug();
 }
 
 void MainWindow::startDebug() {
@@ -241,4 +244,19 @@ void MainWindow::server_send(const QString &msg) {
 QString MainWindow::getLine(int lineNum) {
     QStringList lines = codeEditor->toPlainText().split('\n', QString::SkipEmptyParts);
     return lines.at(lineNum);
+}
+
+void MainWindow::updateAppLog() {
+
+    QFile file("C_IDE_log.log");
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::information(0, "info", file.errorString());
+    }
+
+    QTextStream stream(&file);
+
+    applicationLog->setText(stream.readAll());
+
+    file.close();
+
 }

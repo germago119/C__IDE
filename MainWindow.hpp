@@ -31,7 +31,7 @@ private:
 
     QLabel *stdOut;
 
-    QLabel *applicationLog;
+    QTextBrowser *applicationLog;
 
     QTableView *ramview;
 
@@ -44,6 +44,8 @@ private:
     QPushButton *clearBtn;
 
     Highlighter *highlighter;
+
+    void updateAppLog();
 
 
     //SERVER STUFF
@@ -64,7 +66,7 @@ private slots:
 
     void runBtnHandler();
 
-    void clearBtnHnadler();
+    void clearBtnHandler();
 
 };
 
