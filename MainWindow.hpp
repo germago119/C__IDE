@@ -56,7 +56,6 @@ private:
     void client_read();
     void server_send(const QString &msg);
     void server_read();
-    QString getLine(int);
     void startDebug();
     int currentLine;
     void startServer();

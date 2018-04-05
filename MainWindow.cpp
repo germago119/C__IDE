@@ -118,19 +118,6 @@ MainWindow::MainWindow() {
 
     this->resize(wWidth, wHeight);
 
-/*
-    codeEditor->setPlainText("hello\n"
-                             "hi\n"
-                             "hola\n"
-                             "hhh");
-
-    QStringList lines = codeEditor->toPlainText()
-            .split('\n', QString::SkipEmptyParts);
-    if (lines.count() > 3)
-        qDebug() << "fourth line:" << lines.at(3);
-
-*/
-
     // codeEditor->setPlainText("//\n//  main.cpp\\n//  Test\n//\n//  Created by Roger Valderrama\n//\n#include <iostream>\nint main(int argc, const char * argv[]) {\n// insert code here...\nstd::cout << ""Hello World\n"";\nreturn 0;\n}\nint a = 5;\nlong b = 8;\n char c = 'c';\n float f = 4.0;\n double z = 2.0;\nstruct a {};\nreference<a>;\nvoid getAddr();\nvoid getValue();\nvoid print();\n\"dandelion\"");
 
 
@@ -151,12 +138,7 @@ MainWindow::~MainWindow() {
 
 //METODO DEL BOTON RUN
 void MainWindow::runBtnHandler() {
-    qDebug() << "IT RUN";
     startServer();
-
-    auto count = codeEditor->document()->blockCount();
-    qDebug() << count;
-
     updateAppLog();
 }
 
@@ -168,9 +150,10 @@ void MainWindow::clearBtnHandler() {
 
 void MainWindow::startDebug() {
     QStringList lines = codeEditor->toPlainText().split('\n', QString::SkipEmptyParts);
-    //if(currentLine != ) {
+    if (currentLine != codeEditor->document()->blockCount()) {
         client_send(lines.at(currentLine));
         currentLine += 1;
+    }
 }
 
 
@@ -225,25 +208,13 @@ void MainWindow::server_read() {
         QString message;
         in >> message;
         std::cout << "Just received: " << message.toStdString() << std::endl;
+    }else {
+        std::cout << "Nothing to read" << std::endl;
     }
-    std::cout << "Nothing to read" << std::endl;
 }
 
 void MainWindow::server_send(const QString &msg) {
     server->send(msg);
-    /*if(socket){
-        QTextStream T(socket);
-        T << msg;
-        socket->flush();
-    }
-    else{
-        std::cout << "No client connected" << std::endl;
-    }*/
-}
-
-QString MainWindow::getLine(int lineNum) {
-    QStringList lines = codeEditor->toPlainText().split('\n', QString::SkipEmptyParts);
-    return lines.at(lineNum);
 }
 
 void MainWindow::updateAppLog() {
@@ -254,6 +225,7 @@ void MainWindow::updateAppLog() {
     }
 
     QTextStream stream(&file);
+    stream.seek(159);
 
     applicationLog->setText(stream.readAll());
 

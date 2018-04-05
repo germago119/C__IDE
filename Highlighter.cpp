@@ -8,11 +8,11 @@ Highlighter::Highlighter(QTextDocument *parent)
         : QSyntaxHighlighter(parent) {
 
     //Colors
-    auto byzantine = QColor::QColor(184, 51, 161, 255);
-    auto blue = QColor::QColor(41, 52, 212, 255);
-    auto persian = QColor::QColor(207, 49, 37, 255);
-    auto green = QColor::QColor(0, 131, 18, 255);
-    auto brown = QColor::QColor(119, 73, 45, 255);
+    auto byzantine = QColor(184, 51, 161, 255);
+    auto blue = QColor(41, 52, 212, 255);
+    auto persian = QColor(207, 49, 37, 255);
+    auto green = QColor(0, 131, 18, 255);
+    auto brown = QColor(119, 73, 45, 255);
     auto purple = QColor(111, 65, 167, 255);
     auto dandelion = QColor(255, 200, 20, 255);
 
