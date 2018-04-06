@@ -8,7 +8,7 @@
 MainWindow::MainWindow() {
 
     setWindowTitle("C! IDE");
-    auto const wWidth{1000};
+    auto const wWidth{1200};
     auto const wHeight{750};
 
     //Set up CodeEditor
@@ -117,7 +117,7 @@ MainWindow::MainWindow() {
     vLayout->addWidget(horizontalSplitter);
 
     QList<int> widgetWidth;
-    widgetWidth << wWidth * 0.7 << wWidth * 0.3;
+    widgetWidth << wWidth * 0.65 << wWidth * 0.35;
 
     QList<int> widgetHeight;
     widgetHeight << wHeight * 0.5 << wHeight * 0.25 << wHeight * 0.35;
