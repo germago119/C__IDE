@@ -11,9 +11,9 @@ LocalServer::LocalServer(QObject *parent) : QLocalServer(parent)
     connect(this, &LocalServer::newConnection, [&](){
         clientSocket = nextPendingConnection();
         connect(clientSocket, &QLocalSocket::readyRead, [&](){
-            LOG_F(INFO, "Local server signal connected to socket");
             read();
         });
+        LOG_F(INFO, "Local server signal connected to socket");
     });
 }
 
@@ -31,7 +31,6 @@ void LocalServer::send(const QString &msg)
 
 void LocalServer::read(){
     LOG_F(INFO, "Reading incoming message.");
-
     if(clientSocket->bytesAvailable() > 0){
         while (clientSocket->bytesAvailable() < (int)sizeof(quint32))
             clientSocket->waitForReadyRead();
@@ -47,11 +46,12 @@ void LocalServer::read(){
 
         QString message;
         in >> message;
-        std::cout << "Just received: " << message.toStdString() << std::endl;
-        LOG_F(INFO, "Message received.");
+        message.insert(0, "Message received: ");
+        const char* logMsg = message.toStdString().c_str();
+        LOG_F(INFO, logMsg);
     }
-
-    LOG_F(INFO, "No message to read.");
+    else
+        LOG_F(INFO, "No message to read.");
 }
 
 

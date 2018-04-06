@@ -36,10 +36,16 @@ MainWindow::MainWindow() {
     //Buttons
     runBtn = new QPushButton("RUN");
     clearBtn = new QPushButton("Clear");
+    stepBtn = new QPushButton("Step");
+    stopBtn = new QPushButton("Stop");
+    stepBtn->setEnabled(false);
+    stopBtn->setEnabled(false);
 
     //Connect Btns
     connect(runBtn, SIGNAL(clicked()), this, SLOT(runBtnHandler()));
     connect(clearBtn, SIGNAL(clicked()), this, SLOT(clearBtnHandler()));
+    connect(stepBtn, SIGNAL(clicked()), this, SLOT(stepBtnHandler()));
+    connect(stopBtn, SIGNAL(clicked()), this, SLOT(stopBtnHandler()));
 
     //Splitters
     auto *verticalSplitter = new QSplitter(Qt::Orientation::Vertical);
@@ -69,6 +75,11 @@ MainWindow::MainWindow() {
     clearBtn->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     apploglabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
 
+    stopBtn->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    ramlivelabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+
+    stepBtn->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    ramlivelabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
 
     //Delete padding in inner Layout
     applogVLayout->setMargin(0);
@@ -76,6 +87,8 @@ MainWindow::MainWindow() {
     //Spacing and setup for titleLayout
     titlehLayout->addSpacing(0);
     titlehLayout->addWidget(runBtn);
+    titlehLayout->addWidget(stopBtn);
+    titlehLayout->addWidget(stepBtn);
     titlehLayout->addSpacing(650);
     titlehLayout->addWidget(ramlivelabel);
     titlehLayout->addSpacing(180);
@@ -138,22 +151,43 @@ MainWindow::~MainWindow() {
 
 //METODO DEL BOTON RUN
 void MainWindow::runBtnHandler() {
-    startServer();
+    if (!server->isListening()) {
+        startServer();
+    }
+    LOG_F(INFO, "Code execution started");
     updateAppLog();
+    runBtn->setEnabled(false);
+    stopBtn->setEnabled(true);
+    stepBtn->setEnabled(true);
+
 }
 
 //METODO DEL BOTON CLEAR
 void MainWindow::clearBtnHandler() {
     applicationLog->clear();
-    //startDebug();
 }
 
-void MainWindow::startDebug() {
-    QStringList lines = codeEditor->toPlainText().split('\n', QString::SkipEmptyParts);
-    if (currentLine != codeEditor->document()->blockCount()) {
-        client_send(lines.at(currentLine));
-        currentLine += 1;
+//Método del botón stop
+void MainWindow::stopBtnHandler() {
+    if(!runBtn->isEnabled()){
+        runBtn->setEnabled(true);
+        stopBtn->setEnabled(false);
+        stepBtn->setEnabled(false);
+        currentLine = 0;
+        LOG_F(INFO, "Code execution stopped");
+        updateAppLog();
     }
+}
+
+//Método del botón step
+void MainWindow::stepBtnHandler() {
+    QStringList lines = codeEditor->toPlainText().split('\n', QString::SkipEmptyParts);
+    if (currentLine < codeEditor->document()->blockCount()) {
+        client_send(lines.at(currentLine));
+        updateAppLog();
+        currentLine += 1;
+    } else
+        stopBtnHandler();
 }
 
 
@@ -166,7 +200,6 @@ void MainWindow::startServer() {
     }else{
         LOG_F(INFO, "Started server.");
         currentLine = 0;
-        //QMessageBox::information(this, "Server", "Servido iniciado");
         //conecta la señal readyRead del socket para mostrar el mensaje que recibe
         socket->connectToServer("mserver");
         connect(socket, &QLocalSocket::readyRead, [&](){
@@ -191,7 +224,7 @@ void MainWindow::client_send(const QString &msg) {
     socket->write(block);
     socket->flush();
 }
-
+/*
 void MainWindow::server_read() {
     std::cout << "Entering message received" << std::endl;
     if(socket->bytesAvailable() > 0){
@@ -211,11 +244,11 @@ void MainWindow::server_read() {
     }else {
         std::cout << "Nothing to read" << std::endl;
     }
-}
+}*/
 
-void MainWindow::server_send(const QString &msg) {
+/*void MainWindow::server_send(const QString &msg) {
     server->send(msg);
-}
+}*/
 
 void MainWindow::updateAppLog() {
 
@@ -228,7 +261,6 @@ void MainWindow::updateAppLog() {
     stream.seek(159);
 
     applicationLog->setText(stream.readAll());
-
     file.close();
 
 }

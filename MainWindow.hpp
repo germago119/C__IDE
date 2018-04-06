@@ -47,6 +47,10 @@ private:
 
     void updateAppLog();
 
+    //Botón para ejecutar por pasos
+    QPushButton *stepBtn;
+    QPushButton *stopBtn;
+
 
     //SERVER STUFF
 
@@ -54,9 +58,8 @@ private:
     LocalServer *server;
     void client_send(const QString &msg);
     void client_read();
-    void server_send(const QString &msg);
-    void server_read();
-    void startDebug();
+    /*void server_send(const QString &msg);
+    void server_read();*/
     int currentLine;
     void startServer();
 
@@ -66,6 +69,9 @@ private slots:
     void runBtnHandler();
 
     void clearBtnHandler();
+
+    void stopBtnHandler();
+    void stepBtnHandler();
 
 };
 
