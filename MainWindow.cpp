@@ -140,6 +140,8 @@ MainWindow::MainWindow() {
     server = new LocalServer(this);
     socket = new QLocalSocket(this);
     currentLine = 0;
+
+    setModel();
 }
 
 MainWindow::~MainWindow() {
@@ -156,6 +158,7 @@ void MainWindow::runBtnHandler() {
     }
     LOG_F(INFO, "Code execution started");
     updateAppLog();
+    setModel();
     runBtn->setEnabled(false);
     stopBtn->setEnabled(true);
     stepBtn->setEnabled(true);
@@ -190,7 +193,6 @@ void MainWindow::stepBtnHandler() {
         stopBtnHandler();
 }
 
-
 void MainWindow::startServer() {
     //inicia el server
     if(!server ->listen("mserver"))
@@ -210,7 +212,9 @@ void MainWindow::startServer() {
 
 void MainWindow::client_read() {
     QTextStream T(socket);
-    QMessageBox::information(this, "Cliente", T.readAll());
+    //QMessageBox::information(this, "Cliente", T.readAll());
+    QStandardItem *item = new QStandardItem(QString(T.readAll()));
+    model->appendRow(item);
 }
 
 void MainWindow::client_send(const QString &msg) {
@@ -224,31 +228,7 @@ void MainWindow::client_send(const QString &msg) {
     socket->write(block);
     socket->flush();
 }
-/*
-void MainWindow::server_read() {
-    std::cout << "Entering message received" << std::endl;
-    if(socket->bytesAvailable() > 0){
-        while (socket->bytesAvailable() < (int)sizeof(quint32))
-            socket->waitForReadyRead();
 
-        connect(socket, SIGNAL(disconnected()),
-                socket, SLOT(deleteLater()));
-        QDataStream in(socket);
-        in.setVersion(QDataStream::Qt_4_7);
-        if (socket->bytesAvailable() < (int)sizeof(quint16)) {
-            return;
-        }
-        QString message;
-        in >> message;
-        std::cout << "Just received: " << message.toStdString() << std::endl;
-    }else {
-        std::cout << "Nothing to read" << std::endl;
-    }
-}*/
-
-/*void MainWindow::server_send(const QString &msg) {
-    server->send(msg);
-}*/
 
 void MainWindow::updateAppLog() {
 
@@ -261,6 +241,17 @@ void MainWindow::updateAppLog() {
     stream.seek(159);
 
     applicationLog->setText(stream.readAll());
-    file.close();
+    applicationLog->verticalScrollBar()->setValue(applicationLog->verticalScrollBar()->maximum());
 
+    file.close();
+}
+
+void MainWindow::setModel() {
+    //Set model to ramview
+    model = new QStandardItemModel(0,4,this); //0 Rows and 4 Columns
+    model->setHorizontalHeaderItem(0, new QStandardItem(QString("Direction")));
+    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Value")));
+    model->setHorizontalHeaderItem(2, new QStandardItem(QString("Name")));
+    model->setHorizontalHeaderItem(3, new QStandardItem(QString("References")));
+    ramview->setModel(model);
 }

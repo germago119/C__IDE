@@ -43,12 +43,13 @@ void LocalServer::read(){
         if (clientSocket->bytesAvailable() < (int)sizeof(quint16)) {
             return;
         }
-
         QString message;
         in >> message;
         message.insert(0, "Message received: ");
         const char* logMsg = message.toStdString().c_str();
+        std::cout << message.toStdString() << std::endl;
         LOG_F(INFO, logMsg);
+        send(message);
     }
     else
         LOG_F(INFO, "No message to read.");

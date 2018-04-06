@@ -45,7 +45,11 @@ private:
 
     Highlighter *highlighter;
 
+    QStandardItemModel *model;
+
     void updateAppLog();
+
+    void setModel();
 
     //Botón para ejecutar por pasos
     QPushButton *stepBtn;
@@ -58,8 +62,6 @@ private:
     LocalServer *server;
     void client_send(const QString &msg);
     void client_read();
-    /*void server_send(const QString &msg);
-    void server_read();*/
     int currentLine;
     void startServer();
 
@@ -72,7 +74,6 @@ private slots:
 
     void stopBtnHandler();
     void stepBtnHandler();
-
 };
 
 
