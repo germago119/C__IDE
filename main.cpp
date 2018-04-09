@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     MainWindow window;
     window.show();
     return a.exec();
-
+}
     /*JSONparser *parser;
     QJsonDocument receivedData = parser->writeRAMdata(0, "a", "b", 2);
     std::cout << receivedData.toJson(QJsonDocument::Compact).toStdString()<< std::endl;
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
         std::cout << contents[0].toObject().value("References").toString().toStdString() << std::endl;
     } else
         std::cout << "no" << std::endl;*/
-}
+//}
 
 
 //int main() {
