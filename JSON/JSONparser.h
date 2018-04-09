@@ -16,8 +16,10 @@ public:
     QJsonDocument writeMallocRequest(int);
     QJsonDocument writeDeclarationRequest(char, char);
     QJsonDocument writeDeclarationRequest(char, char, char);
+    QJsonDocument writeAssignationRequest(char, char);
     QJsonDocument writeScopeRequest();
-    QJsonDocument writeExpressionRequest();
+    QJsonDocument writeExpressionRequest(char, char, char);
+    QJsonDocument writeRAMdata(int, std::string, std::string, int);
 };
 
 
