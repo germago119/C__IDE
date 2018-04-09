@@ -31,6 +31,25 @@ void LocalServer::send(const QString &msg)
     }
 }
 
+void LocalServer::send(const QJsonDocument &msg)
+{
+    if(clientSocket){
+        //send a message to the server
+        QByteArray block;
+        QDataStream out(&block, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_4_7);
+        // client writes a QString
+        out << msg.toJson(QJsonDocument::Compact);
+        out.device()->seek(0);
+        clientSocket->write(block);
+        clientSocket->flush();
+        LOG_F(INFO, "Message sent to client");
+    }
+    else{
+        LOG_F(INFO, "Send failed. No client connected");
+    }
+}
+
 void LocalServer::read(){
     LOG_F(INFO, "Reading incoming message.");
     if(clientSocket->bytesAvailable() > 0){
@@ -47,7 +66,7 @@ void LocalServer::read(){
         }
 
         QByteArray buffer;
-        int length = (int)clientSocket->bytesAvailable();
+        auto length = (int)clientSocket->bytesAvailable();
         char temp [length];
         int test = in.readRawData (temp, length);
         buffer.append (temp, length);
@@ -57,7 +76,7 @@ void LocalServer::read(){
         std::cout << "Qstring from json: " << jsonString.toStdString() << std::endl;
         const char* logMsg = jsonString.toStdString().c_str();
         LOG_F(INFO, logMsg);
-        send(jsonString);
+        send(parser->writeRAMdata(10, "hfr", "h", 10));
         /*QString message;
         in >> message;
         message.insert(0, "Message received: ");

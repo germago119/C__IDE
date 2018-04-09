@@ -157,14 +157,12 @@ void MainWindow::runBtnHandler() {
     if (!server->isListening()) {
         startServer();
         bool ok;
-        int i = 0;
-        i = QInputDialog::getInt(this, tr("Set total memory"),
-                                     tr("Enter total memory"), 25, 0, 100, 1, &ok);
+        int i = QInputDialog::getInt(this, tr("Set total memory"),
+                                     tr("Enter total memory"), 1, 1, 1000, 1, &ok);
         if (ok && i != 0) {
             client_send(jsonParser->writeMallocRequest(i));
-            QMessageBox::information(0, "info", "json sent");
         }
-        if(!ok || !i) {
+        if(!ok || i== 0) {
             stopBtnHandler();
             QMessageBox::information(0, "Error", "Total malloc necessary to start execution");
         }
@@ -222,9 +220,42 @@ void MainWindow::startServer() {
 }
 
 void MainWindow::client_read() {
-    QTextStream T(socket);
-    QStandardItem *item = new QStandardItem(QString(T.readAll()));
-    model->appendRow(item);
+    QDataStream T(socket);
+
+    QByteArray buffer;
+    auto length = (int) socket->bytesAvailable();
+    char temp[length];
+    int test = T.readRawData(temp, length);
+    buffer.append(temp, length);
+
+    QJsonDocument receivedData = QJsonDocument::fromJson(buffer.remove(0, 4));
+    QString jsonString = receivedData.toJson(QJsonDocument::Compact);
+    std::cout << "Qstring from json: " << jsonString.toStdString() << std::endl;
+    const char *logMsg = jsonString.toStdString().c_str();
+    LOG_F(INFO, logMsg);
+
+    QList<QStandardItem*> column;
+    QJsonObject json = receivedData.object();
+    if (json.contains("Subject") && json["Subject"] == "RAM") {
+        QJsonArray contents = json["Contents"].toArray();
+
+        QStandardItem *direction =
+                new QStandardItem(contents[0].toObject().value("Direction").toString());
+        column.append(direction);
+
+        QStandardItem *name =
+                new QStandardItem(contents[0].toObject().value("Name").toString());
+        column.append(name);
+
+        QStandardItem *value =
+                new QStandardItem(contents[0].toObject().value("Value").toString());
+        column.append(value);
+
+        QStandardItem *references =
+                new QStandardItem(contents[0].toObject().value("References").toString());
+        column.append(references);
+    }
+    model->appendRow(column);
     updateAppLog();
 }
 
