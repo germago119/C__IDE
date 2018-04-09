@@ -1,9 +1,9 @@
 #include <iostream>
 #include <QtWidgets>
-#include "MainWindow.hpp"
+#include "GUI/MainWindow.hpp"
 #define LOGURU_IMPLEMENTATION 1
 #include "Server/loguru.hpp"
-#include "CodeEditor.hpp"
+#include "GUI/CodeEditor.hpp"
 
 
 int main(int argc, char *argv[]) {
@@ -14,4 +14,9 @@ int main(int argc, char *argv[]) {
     MainWindow window;
     window.show();
     return a.exec();
+
+   /* JSONparser *parser;
+    QJsonDocument receivedData = parser->writeMallocRequest(100);
+    QString jsonString = receivedData.toJson(QJsonDocument::Compact);
+    std::cout << jsonString.toStdString() << std::endl;*/
 }

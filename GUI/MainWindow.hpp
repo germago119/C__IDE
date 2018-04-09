@@ -9,6 +9,7 @@
 #include <QtWidgets>
 #include <QDebug>
 #include <QLocalSocket>
+#include <JSON/JSONparser.h>
 #include "Server/LocalServer.h"
 #include "Server/loguru.hpp"
 #include "CodeEditor.hpp"
@@ -54,6 +55,7 @@ private:
     //Botón para ejecutar por pasos
     QPushButton *stepBtn;
     QPushButton *stopBtn;
+    JSONparser *jsonParser;
 
 
     //SERVER STUFF
@@ -61,6 +63,7 @@ private:
     QLocalSocket *socket;
     LocalServer *server;
     void client_send(const QString &msg);
+    void client_send(const QJsonDocument &msg);
     void client_read();
     int currentLine;
     void startServer();

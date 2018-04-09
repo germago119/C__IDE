@@ -76,10 +76,8 @@ MainWindow::MainWindow() {
     apploglabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
 
     stopBtn->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-    ramlivelabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
 
     stepBtn->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-    ramlivelabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
 
     //Delete padding in inner Layout
     applogVLayout->setMargin(0);
@@ -131,9 +129,6 @@ MainWindow::MainWindow() {
 
     this->resize(wWidth, wHeight);
 
-    // codeEditor->setPlainText("//\n//  main.cpp\\n//  Test\n//\n//  Created by Roger Valderrama\n//\n#include <iostream>\nint main(int argc, const char * argv[]) {\n// insert code here...\nstd::cout << ""Hello World\n"";\nreturn 0;\n}\nint a = 5;\nlong b = 8;\n char c = 'c';\n float f = 4.0;\n double z = 2.0;\nstruct a {};\nreference<a>;\nvoid getAddr();\nvoid getValue();\nvoid print();\n\"dandelion\"");
-
-
     updateAppLog();
 
     //Server Stuff
@@ -141,11 +136,17 @@ MainWindow::MainWindow() {
     socket = new QLocalSocket(this);
     currentLine = 0;
 
+    jsonParser = new JSONparser();
+
+    //ramview settings
     setModel();
+    ramview->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 MainWindow::~MainWindow() {
     server->removeServer("mserver");
+    delete jsonParser;
+    delete model;
     delete server;
     delete socket;
     delete codeEditor;
@@ -155,6 +156,18 @@ MainWindow::~MainWindow() {
 void MainWindow::runBtnHandler() {
     if (!server->isListening()) {
         startServer();
+        bool ok;
+        int i = 0;
+        i = QInputDialog::getInt(this, tr("Set total memory"),
+                                     tr("Enter total memory"), 25, 0, 100, 1, &ok);
+        if (ok && i != 0) {
+            client_send(jsonParser->writeMallocRequest(i));
+            QMessageBox::information(0, "info", "json sent");
+        }
+        if(!ok || !i) {
+            stopBtnHandler();
+            QMessageBox::information(0, "Error", "Total malloc necessary to start execution");
+        }
     }
     LOG_F(INFO, "Code execution started");
     updateAppLog();
@@ -162,7 +175,6 @@ void MainWindow::runBtnHandler() {
     runBtn->setEnabled(false);
     stopBtn->setEnabled(true);
     stepBtn->setEnabled(true);
-
 }
 
 //METODO DEL BOTON CLEAR
@@ -198,7 +210,6 @@ void MainWindow::startServer() {
     if(!server ->listen("mserver"))
     {
         LOG_F(INFO, "Can't connect to server.");
-        QMessageBox::critical(this, "Error", server->errorString());
     }else{
         LOG_F(INFO, "Started server.");
         currentLine = 0;
@@ -212,9 +223,9 @@ void MainWindow::startServer() {
 
 void MainWindow::client_read() {
     QTextStream T(socket);
-    //QMessageBox::information(this, "Cliente", T.readAll());
     QStandardItem *item = new QStandardItem(QString(T.readAll()));
     model->appendRow(item);
+    updateAppLog();
 }
 
 void MainWindow::client_send(const QString &msg) {
@@ -227,11 +238,23 @@ void MainWindow::client_send(const QString &msg) {
     out.device()->seek(0);
     socket->write(block);
     socket->flush();
+
+}
+
+void MainWindow::client_send(const QJsonDocument &msg) {
+//send a message to the server
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_4_7);
+    // client writes a QString
+    out << msg.toJson(QJsonDocument::Compact);
+    out.device()->seek(0);
+    socket->write(block);
+    socket->flush();
 }
 
 
 void MainWindow::updateAppLog() {
-
     QFile file("C_IDE_log.log");
     if (!file.open(QIODevice::ReadOnly)) {
         QMessageBox::information(0, "info", file.errorString());

@@ -2,6 +2,7 @@
 // Created by karina on 29/03/18.
 //
 
+#include <QtCore/QJsonDocument>
 #include "LocalServer.h"
 #include "Server/loguru.hpp"
 
@@ -23,6 +24,7 @@ void LocalServer::send(const QString &msg)
         QTextStream T(clientSocket);
         T << msg;
         clientSocket->flush();
+        LOG_F(INFO, "Message sent to client");
     }
     else{
         LOG_F(INFO, "Send failed. No client connected");
@@ -43,16 +45,27 @@ void LocalServer::read(){
         if (clientSocket->bytesAvailable() < (int)sizeof(quint16)) {
             return;
         }
-        QString message;
+
+        QByteArray buffer;
+        int length = (int)clientSocket->bytesAvailable();
+        char temp [length];
+        int test = in.readRawData (temp, length);
+        buffer.append (temp, length);
+
+        QJsonDocument receivedData = QJsonDocument::fromJson(buffer.remove(0,4));
+        QString jsonString = receivedData.toJson(QJsonDocument::Compact);
+        std::cout << "Qstring from json: " << jsonString.toStdString() << std::endl;
+        const char* logMsg = jsonString.toStdString().c_str();
+        LOG_F(INFO, logMsg);
+        send(jsonString);
+        /*QString message;
         in >> message;
         message.insert(0, "Message received: ");
         const char* logMsg = message.toStdString().c_str();
         std::cout << message.toStdString() << std::endl;
         LOG_F(INFO, logMsg);
-        send(message);
+        send(message);*/
     }
     else
         LOG_F(INFO, "No message to read.");
 }
-
-
