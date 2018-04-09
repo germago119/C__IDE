@@ -9,13 +9,13 @@ enum NType {
     Undefined,
     UnaryMinus,
     NumberValue,
-    OperadorEq,
     OperatorRef,
     OperatorMul,
     OperatorDiv,
     OperatorPlus,
+    OperadorEqual,
     OperatorMinus,
-    VariableValue,
+    VariableValue
 };
 
 class NodeType {
