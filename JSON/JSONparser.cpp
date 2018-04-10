@@ -4,8 +4,13 @@
 #include <iostream>
 #include "JSONparser.h"
 
+/**
+ * Writes a JSON document with the subject "Total_Malloc"
+ * to request memory allocation for the current program in C!
+ * @param totalMem
+ * @return
+ */
 QJsonDocument JSONparser::writeMallocRequest(int totalMem) {
-
     QJsonObject value;
     value.insert("Value", totalMem);
 
@@ -21,16 +26,15 @@ QJsonDocument JSONparser::writeMallocRequest(int totalMem) {
     return json;
 }
 
-QJsonDocument JSONparser::writeDeclarationRequest(char identifier, char type) {
-    QJsonObject id_obj;
-    id_obj.insert("Identifier", identifier);
-
-    QJsonObject type_obj;
-    type_obj.insert("Type", type);
+QJsonDocument JSONparser::writeDeclarationRequest(std::string identifier, std::string type) {
+    QString str = QString::fromStdString(identifier);
+    QJsonObject obj;
+    obj.insert("Identifier", str);
+    str = QString::fromStdString(type);
+    obj.insert("Type", str);
 
     QJsonArray content;
-    content.push_back(type_obj);
-    content.push_back(id_obj);
+    content.push_back(obj);
 
     QJsonObject message;
     message.insert("Subject", "Declaration");
@@ -41,20 +45,18 @@ QJsonDocument JSONparser::writeDeclarationRequest(char identifier, char type) {
     return json;
 }
 
-QJsonDocument JSONparser::writeDeclarationRequest(char identifier, char type, char value) {
-    QJsonObject id_obj;
-    id_obj.insert("Identifier", identifier);
-
-    QJsonObject type_obj;
-    type_obj.insert("Type", type);
-
-    QJsonObject value_obj;
-    value_obj.insert("Value", value);
+QJsonDocument JSONparser::writeDeclarationRequest(std::string identifier, std::string type, std::string value) {
+    QString str = QString::fromStdString(identifier);
+    QJsonObject obj;
+    obj.insert("Identifier", str);
+    str = QString::fromStdString(type);
+    obj.insert("Type", str);
+    str = QString::fromStdString(value);
+    obj.insert("Value", str);
 
     QJsonArray content;
-    content.push_back(type_obj);
-    content.push_back(id_obj);
-    content.push_back(value_obj);
+    content.push_back(obj);
+
 
     QJsonObject message;
     message.insert("Subject", "Declaration");
@@ -66,24 +68,22 @@ QJsonDocument JSONparser::writeDeclarationRequest(char identifier, char type, ch
 }
 
 QJsonDocument JSONparser::writeScopeRequest() {
+    //QString str = QString::fromStdString(value);
     QJsonDocument json;
     return json;
 }
 
-QJsonDocument JSONparser::writeExpressionRequest(char var1, char var2, char operator_) {
-    QJsonObject var1_obj;
-    var1_obj.insert("Var_1", var1);
-
-    QJsonObject var2_obj;
-    var2_obj.insert("Var_2", var2);
-
-    QJsonObject operator_obj;
-    operator_obj.insert("Operator", operator_);
+QJsonDocument JSONparser::writeExpressionRequest(std::string var1, std::string var2, std::string oprt) {
+    QString str = QString::fromStdString(var1);
+    QJsonObject obj;
+    obj.insert("Var_1", str);
+    str = QString::fromStdString(var2);
+    obj.insert("Var_2", str);
+    str = QString::fromStdString(oprt);
+    obj.insert("Operator", str);
 
     QJsonArray content;
-    content.push_back(var1_obj);
-    content.push_back(var2_obj);
-    content.push_back(operator_obj);
+    content.push_back(obj);
 
     QJsonObject message;
     message.insert("Subject", "Expression");
@@ -94,16 +94,15 @@ QJsonDocument JSONparser::writeExpressionRequest(char var1, char var2, char oper
     return json;
 }
 
-QJsonDocument JSONparser::writeAssignationRequest(char identifier, char value) {
-    QJsonObject id_obj;
-    id_obj.insert("Identifier", identifier);
-
-    QJsonObject value_obj;
-    value_obj.insert("Value", value);
+QJsonDocument JSONparser::writeAssignationRequest(std::string identifier, std::string value) {
+    QString str = QString::fromStdString(identifier);
+    QJsonObject obj;
+    obj.insert("Identifier", str);
+    str = QString::fromStdString(value);
+    obj.insert("Value", str);
 
     QJsonArray content;
-    content.push_back(id_obj);
-    content.push_back(value_obj);
+    content.push_back(obj);
 
     QJsonObject message;
     message.insert("Subject", "Assignation");
@@ -115,11 +114,13 @@ QJsonDocument JSONparser::writeAssignationRequest(char identifier, char value) {
 }
 
 QJsonDocument JSONparser::writeRAMdata(int dir, std::string value, std::string id, int references) {
+    QString str = QString::fromStdString(value);
     QJsonObject obj;
-    obj.insert("Direction", "0x0002");
-    obj.insert("Value", "100");
-    obj.insert("Name", "Total_mem");
-    obj.insert("References", "1");
+    obj.insert("Direction", dir);
+    obj.insert("Value", str);
+    str = QString::fromStdString(id);
+    obj.insert("Name",str);
+    obj.insert("References", references);
 
     QJsonArray content;
     content.push_back(obj);
