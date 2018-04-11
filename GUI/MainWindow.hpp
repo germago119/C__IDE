@@ -30,7 +30,7 @@ private:
 
     QVBoxLayout *vLayout;
 
-    QLabel *stdOut;
+    QTextBrowser *stdOut;
 
     QTextBrowser *applicationLog;
 
@@ -77,6 +77,10 @@ private slots:
 
     void stopBtnHandler();
     void stepBtnHandler();
+
+private slots:
+
+    void useParser();
 };
 
 
