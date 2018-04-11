@@ -12,19 +12,24 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Network REQUIRED)
-find_package(Qt5Xml REQUIRED)
-find_package(Qt5PrintSupport REQUIRED)
-find_package(Qt5OpenGL REQUIRED)
-find_package(Qt5Sql REQUIRED)
 
-#qt5_wrap_ui(UI_HEADERS mainwindow.ui)
-#qt5_wrap_ui(UI_GENERATED_HEADERS ${UI_SOURCES})
 
-#qt5_add_resources( QRCS resources.qrc )
-add_executable(C__IDE main.cpp GUI/MainWindow.cpp GUI/MainWindow.hpp Server/LocalServer.cpp GUI/CodeEditor.cpp GUI/CodeEditor.hpp GUI/Highlighter.cpp GUI/Highlighter.hpp AST/ASCIIParser.cpp AST/ASCIIParser.hpp AST/NodeType.cpp AST/NodeType.hpp JSON/JSONparser.cpp JSON/JSONparser.h AST/NodePrefix.cpp)
-target_link_libraries(C__IDE Qt5::Widgets Qt5::Core Qt5::Network Qt5::Sql Qt5::OpenGL)
+find_package(Boost REQUIRED)
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+set(BOOST_ALL_DYN_LINK ON) # force dynamic linking for all libraries
+
+
+add_executable(C__IDE main.cpp GUI/MainWindow.cpp GUI/MainWindow.hpp Server/LocalServer.cpp Server/LocalServer.h GUI/CodeEditor.cpp GUI/CodeEditor.hpp GUI/Highlighter.cpp GUI/Highlighter.hpp JSON/JSONparser.cpp JSON/JSONparser.h AST/CodeParser.cpp AST/CodeParser.hpp AST/NodeToken.cpp AST/NodeToken.hpp AST/JSONVar.cpp AST/JSONVar.hpp AST/JSONStruct.cpp AST/JSONStruct.hpp)
+target_link_libraries(C__IDE Qt5::Widgets Qt5::Core Qt5::Network)
 
 #Necesario para libreria de logging
 find_package(Threads)
 target_link_libraries(C__IDE ${CMAKE_THREAD_LIBS_INIT}) # For pthreads
 target_link_libraries(C__IDE dl) # For ldl
+
+
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})

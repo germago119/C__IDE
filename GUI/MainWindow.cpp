@@ -2,6 +2,7 @@
 // Created by Roger Valderrama on 3/29/18.
 //
 
+#include <AST/CodeParser.hpp>
 #include "MainWindow.hpp"
 
 
@@ -29,7 +30,7 @@ MainWindow::MainWindow() {
 
     //Labels
     applicationLog = new QTextBrowser();
-    stdOut = new QLabel();
+    stdOut = new QTextBrowser();
     auto *apploglabel = new QLabel("Application Log");
     auto *ramlivelabel = new QLabel("RAM Live View");
 
@@ -131,6 +132,8 @@ MainWindow::MainWindow() {
 
     updateAppLog();
 
+    codeEditor->setPlainText("int a = 1*(2+7);\n struct {int b = 0;\n };\nint c = 9;\n char d = '8'");
+
     //Server Stuff
     server = new LocalServer(this);
     socket = new QLocalSocket(this);
@@ -164,7 +167,7 @@ void MainWindow::runBtnHandler() {
         }
         if(!ok || i== 0) {
             stopBtnHandler();
-            QMessageBox::information(0, "Error", "Total malloc necessary to start execution");
+            QMessageBox::information(nullptr, "Error", "Total malloc necessary to start execution");
         }
     }
     LOG_F(INFO, "Code execution started");
@@ -177,7 +180,8 @@ void MainWindow::runBtnHandler() {
 
 //METODO DEL BOTON CLEAR
 void MainWindow::clearBtnHandler() {
-    applicationLog->clear();
+    //applicationLog->clear();
+    useParser();
 }
 
 //Método del botón stop
@@ -288,7 +292,7 @@ void MainWindow::client_send(const QJsonDocument &msg) {
 void MainWindow::updateAppLog() {
     QFile file("C_IDE_log.log");
     if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::information(0, "info", file.errorString());
+        QMessageBox::information(nullptr, "info", file.errorString());
     }
 
     QTextStream stream(&file);
@@ -309,3 +313,8 @@ void MainWindow::setModel() {
     model->setHorizontalHeaderItem(3, new QStandardItem(QString("References")));
     ramview->setModel(model);
 }
+
+void MainWindow::useParser() {
+    parseCode(codeEditor->toPlainText().toStdString());
+    updateAppLog();
+};
