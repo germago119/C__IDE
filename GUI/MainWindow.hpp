@@ -68,6 +68,8 @@ private:
     int currentLine;
     void startServer();
 
+    void updateLiveRAMView(QJsonObject &message);
+
 
 private slots:
 

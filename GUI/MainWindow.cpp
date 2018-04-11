@@ -225,37 +225,22 @@ void MainWindow::client_read() {
     QByteArray buffer;
     auto length = (int) socket->bytesAvailable();
     char temp[length];
-    int test = T.readRawData(temp, length);
+    if(T.readRawData(temp, length) == -1)
+        LOG_F(INFO, "Failed to read data from stream");
     buffer.append(temp, length);
 
     QJsonDocument receivedData = QJsonDocument::fromJson(buffer.remove(0, 4));
     QString jsonString = receivedData.toJson(QJsonDocument::Compact);
+    QJsonObject json = receivedData.object();
+
     std::cout << "Qstring from json: " << jsonString.toStdString() << std::endl;
+
+    if(json["Subject"] == "RAM"){
+        updateLiveRAMView(json);
+    }
+
     const char *logMsg = jsonString.toStdString().c_str();
     LOG_F(INFO, logMsg);
-
-    QList<QStandardItem*> column;
-    QJsonObject json = receivedData.object();
-    if (json.contains("Subject") && json["Subject"] == "RAM") {
-        QJsonArray contents = json["Contents"].toArray();
-
-        QStandardItem *direction =
-                new QStandardItem(contents[0].toObject().value("Direction").toString());
-        column.append(direction);
-
-        QStandardItem *name =
-                new QStandardItem(contents[0].toObject().value("Name").toString());
-        column.append(name);
-
-        QStandardItem *value =
-                new QStandardItem(contents[0].toObject().value("Value").toString());
-        column.append(value);
-
-        QStandardItem *references =
-                new QStandardItem(contents[0].toObject().value("References").toString());
-        column.append(references);
-    }
-    model->appendRow(column);
     updateAppLog();
 }
 
@@ -308,4 +293,27 @@ void MainWindow::setModel() {
     model->setHorizontalHeaderItem(2, new QStandardItem(QString("Name")));
     model->setHorizontalHeaderItem(3, new QStandardItem(QString("References")));
     ramview->setModel(model);
+}
+
+void MainWindow::updateLiveRAMView(QJsonObject &json) {
+    QList<QStandardItem *> column;
+    QJsonArray contents = json["Contents"].toArray();
+
+    QStandardItem *direction =
+            new QStandardItem(contents[0].toObject().value("Direction").toInt());
+    column.append(direction);
+
+    QStandardItem *name =
+            new QStandardItem(contents[0].toObject().value("Name").toString());
+    column.append(name);
+
+    QStandardItem *value =
+            new QStandardItem(contents[0].toObject().value("Value").toString());
+    column.append(value);
+
+    QStandardItem *references =
+            new QStandardItem(contents[0].toObject().value("References").toInt());
+    column.append(references);
+
+    model->appendRow(column);
 }

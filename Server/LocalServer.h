@@ -22,6 +22,7 @@
 #include <QMessageBox>
 #include <JSON/JSONparser.h>
 #include <QtCore/QJsonDocument>
+#include <malloc.h>
 
 class QLocalSocket;
 class LocalServer : public QLocalServer
@@ -56,6 +57,10 @@ private:
      * @brief Parser para leer mensaje JSON
      */
     JSONparser *parser;
+
+    void memoryAllocation(int total);
+
+    int *memoryBlock = nullptr;
 
 signals:
 

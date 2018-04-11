@@ -69,21 +69,33 @@ void LocalServer::read(){
         char temp [length];
         int test = in.readRawData (temp, length);
         buffer.append (temp, length);
-
+        //Crea un json desde los datos recibidos y elimina los primero 4 bytes
         QJsonDocument receivedData = QJsonDocument::fromJson(buffer.remove(0,4));
         QString jsonString = receivedData.toJson(QJsonDocument::Compact);
         std::cout << "Qstring from json: " << jsonString.toStdString() << std::endl;
-        const char* logMsg = jsonString.toStdString().c_str();
-        LOG_F(INFO, logMsg);
-        send(parser->writeRAMdata(10, "hfr", "h", 10));
-        /*QString message;
-        in >> message;
-        message.insert(0, "Message received: ");
-        const char* logMsg = message.toStdString().c_str();
-        std::cout << message.toStdString() << std::endl;
-        LOG_F(INFO, logMsg);
-        send(message);*/
+        const char* logMsg = jsonString.toUtf8().constData();
+        LOG_F(INFO, "%s", logMsg);
+
+
+        QJsonObject json = receivedData.object();
+        QJsonArray array = json["Contents"].toArray();
+        if(json["Subject"] == "Total_Malloc")
+            memoryAllocation(array[0].toObject().value("Value").toInt());
+        send(parser->writeRAMdata(1000, "Saludo", "Hola", 2));
     }
     else
         LOG_F(INFO, "No message to read.");
 }
+
+void LocalServer::memoryAllocation(int total) {
+    //Buscar error
+    memoryBlock = (int*)malloc(sizeof(int)*total);
+    size_t size = malloc_usable_size(memoryBlock);
+    //Elliminar después
+    const char* msg = size + " bytes were allocated";
+    LOG_F(INFO, msg);
+    std::cout << "Malloc size: " << size << std::endl;
+
+}
+
+
