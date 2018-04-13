@@ -180,8 +180,8 @@ void MainWindow::runBtnHandler() {
 
 //METODO DEL BOTON CLEAR
 void MainWindow::clearBtnHandler() {
-    //applicationLog->clear();
-    useParser();
+    applicationLog->clear();
+    //useParser();
 }
 
 //Método del botón stop
@@ -200,7 +200,8 @@ void MainWindow::stopBtnHandler() {
 void MainWindow::stepBtnHandler() {
     QStringList lines = codeEditor->toPlainText().split('\n', QString::SkipEmptyParts);
     if (currentLine < codeEditor->document()->blockCount()) {
-        client_send(lines.at(currentLine));
+        client_send(useParser());
+        //client_send(lines.at(currentLine));
         updateAppLog();
         currentLine += 1;
     } else
@@ -237,13 +238,13 @@ void MainWindow::client_read() {
     QString jsonString = receivedData.toJson(QJsonDocument::Compact);
     QJsonObject json = receivedData.object();
 
-    std::cout << "Qstring from json: " << jsonString.toStdString() << std::endl;
+    std::cout << "Client read-MainWindow: Qstring from json: " << jsonString.toStdString() << std::endl;
 
     if(json["Subject"] == "RAM"){
         updateLiveRAMView(json);
     }
 
-    const char *logMsg = jsonString.toStdString().c_str();
+    const char* logMsg = jsonString.toUtf8().constData();
     LOG_F(INFO, logMsg);
     updateAppLog();
 }
@@ -323,7 +324,8 @@ void MainWindow::updateLiveRAMView(QJsonObject &json) {
 }
 
 
-void MainWindow::useParser() {
-    parseCode(codeEditor->toPlainText().toStdString());
+QJsonDocument MainWindow::useParser() {
     updateAppLog();
+    parseCode(codeEditor->toPlainText().toStdString());
+    return getJSON();
 };

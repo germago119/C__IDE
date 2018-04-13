@@ -67,9 +67,11 @@ QJsonDocument JSONparser::writeDeclarationRequest(std::string identifier, std::s
     return json;
 }
 
-QJsonDocument JSONparser::writeScopeRequest() {
-    //QString str = QString::fromStdString(value);
-    QJsonDocument json;
+QJsonDocument JSONparser::writeRAMDataRequest() {
+    QJsonObject message;
+    message.insert("Subject", "RAM_data");
+
+    QJsonDocument json(message);
     return json;
 }
 

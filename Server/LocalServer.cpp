@@ -72,7 +72,7 @@ void LocalServer::read(){
         //Crea un json desde los datos recibidos y elimina los primero 4 bytes
         QJsonDocument receivedData = QJsonDocument::fromJson(buffer.remove(0,4));
         QString jsonString = receivedData.toJson(QJsonDocument::Compact);
-        std::cout << "Qstring from json: " << jsonString.toStdString() << std::endl;
+        std::cout << "Read-LocalServer: Qstring from json: " << jsonString.toStdString() << std::endl;
         const char* logMsg = jsonString.toUtf8().constData();
         LOG_F(INFO, "%s", logMsg);
 
@@ -81,20 +81,28 @@ void LocalServer::read(){
         QJsonArray array = json["Contents"].toArray();
         if(json["Subject"] == "Total_Malloc")
             memoryAllocation(array[0].toObject().value("Value").toInt());
-        send(parser->writeRAMdata(1000, "Saludo", "Hola", 2));
+        //else if(json["Subject"] == "RAM_data")
+            //send(getRAMdata());
     }
     else
         LOG_F(INFO, "No message to read.");
 }
 
 void LocalServer::memoryAllocation(int total) {
-    //Buscar error
     memoryBlock = (int*)malloc(sizeof(int)*total);
     size_t size = malloc_usable_size(memoryBlock);
-    //Elliminar después
-    const char* msg = size + " bytes were allocated";
+    //Eliminar después
+    const char* msg = (char)size + " bytes were allocated";
     LOG_F(INFO, msg);
-    std::cout << "Malloc size: " << size << std::endl;
+    //std::cout << "Malloc size: " << size << std::endl;
+}
+
+QJsonDocument LocalServer::getRAMdata() {
+    QJsonDocument *json = new QJsonDocument();
+    return *json;
+}
+
+void LocalServer::readMsg(QJsonObject &msg) {
 
 }
 

@@ -60,6 +60,10 @@ private:
 
     void memoryAllocation(int total);
 
+    void readMsg(QJsonObject &msg);
+
+    QJsonDocument getRAMdata();
+
     int *memoryBlock = nullptr;
 
 signals:

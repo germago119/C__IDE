@@ -20,7 +20,10 @@ void parseCode(std::string);
 
 void parseCode(std::vector<NodeToken *> *);
 
+QJsonDocument getJSON();
+
 std::vector<NodeToken *> *Lexer(std::string);
 
+static QJsonDocument finalJSON;
 
 #endif //C_IDE_CODEPARSER_HPP

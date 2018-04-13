@@ -50,7 +50,7 @@ public:
      * @return JSON del request
      */
     QJsonDocument writeAssignationRequest(std::string identifier, std::string value);
-    QJsonDocument writeScopeRequest();
+    QJsonDocument writeRAMDataRequest();
     /**
      * @brief Crea un JSON para solicitar el cálculo de una expresión
      * @param var1 Primer término

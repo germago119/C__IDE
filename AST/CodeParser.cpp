@@ -95,11 +95,16 @@ void parseCode(std::vector<NodeToken *> *tokens) {
 
         } else if (token->type == STATEMENT_TERMINATOR) {
             if (pJsonStruct == nullptr) {
+                QJsonDocument u = QJsonDocument(*pJsonVar->get());
+                finalJSON = u;
                 std::cout << pJsonVar->toString() << std::endl;
                 LOG_F(INFO, "%s \n", pJsonVar->toLog());
 
             } else if (pJsonVar == nullptr) {
                 pJsonStruct->submit();
+                QString str = QString::fromStdString(pJsonStruct->toString());
+                QJsonDocument u = QJsonDocument::fromJson(str.toUtf8());
+                finalJSON = u;
                 delete (pJsonStruct);
                 pJsonStruct = nullptr;
 
@@ -154,7 +159,6 @@ void parseCode(std::vector<NodeToken *> *tokens) {
             LOG_F(ERROR, "Syntax Error");
             return;
         }
-
     }
     tokens->erase(tokens->begin(), tokens->begin() + tokensDropped);
     if ((pJsonVar != nullptr || currentScope != 0) && tokens->empty()) {
@@ -162,5 +166,9 @@ void parseCode(std::vector<NodeToken *> *tokens) {
     } else if (pJsonStruct != nullptr) {
         LOG_F(ERROR, "} Missing");
     }
-
 }
+
+QJsonDocument getJSON() {
+    return finalJSON;
+}
+

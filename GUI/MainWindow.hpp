@@ -82,7 +82,7 @@ private slots:
 
 private slots:
 
-    void useParser();
+    QJsonDocument useParser();
 };
 
 
