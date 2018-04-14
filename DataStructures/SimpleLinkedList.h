@@ -23,7 +23,7 @@ public:
 
     void insertFront(T data);
 
-    void insertRear(T data);
+    void insertRear(T value);
 
     void insertByIndex(T data, int index);
 
@@ -40,6 +40,10 @@ public:
     void print();
 
     int getSize();
+
+    Node<T>* getHead();
+
+    Node<T>* getTail();
 
 };
 
@@ -205,5 +209,14 @@ Node<T>* SimpleLinkedList<T>::get(int index) {
     }
 }
 
+template<typename T>
+Node<T>* SimpleLinkedList<T>::getHead() {
+    return head;
+}
+
+template<typename T>
+Node<T>* SimpleLinkedList<T>::getTail() {
+    return tail;
+}
 
 #endif //C_IDE_SIMPLELINKEDLIST_H

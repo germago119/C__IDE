@@ -323,7 +323,6 @@ void MainWindow::updateLiveRAMView(QJsonObject &json) {
     model->appendRow(column);
 }
 
-
 QJsonDocument MainWindow::useParser() {
     updateAppLog();
     parseCode(codeEditor->toPlainText().toStdString());

@@ -23,6 +23,10 @@
 #include <JSON/JSONparser.h>
 #include <QtCore/QJsonDocument>
 #include <malloc.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/lexical_cast.hpp>
+#include <DataStructures/SimpleLinkedList.h>
+#include <DataStructures/MemoryNode.h>
 
 class QLocalSocket;
 class LocalServer : public QLocalServer
@@ -64,7 +68,11 @@ private:
 
     QJsonDocument getRAMdata();
 
-    int *memoryBlock = nullptr;
+    char *memoryBlock = nullptr;
+
+    SimpleLinkedList<MemoryNode> *list;
+
+    size_t getBytesToMove();
 
 signals:
 
