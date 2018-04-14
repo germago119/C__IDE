@@ -81,6 +81,8 @@ void LocalServer::read(){
         QJsonArray array = json["Contents"].toArray();
         if(json["Subject"] == "Total_Malloc")
             memoryAllocation(array[0].toObject().value("Value").toInt());
+        else
+            readMsg(json);
         //else if(json["Subject"] == "RAM_data")
             //send(getRAMdata());
     }
@@ -103,7 +105,18 @@ QJsonDocument LocalServer::getRAMdata() {
 }
 
 void LocalServer::readMsg(QJsonObject &msg) {
+    if(msg.contains("Variables")){
+        QJsonArray array = msg["Variables"].toArray();
+        for(int i = 0; i < array.size(); ++i){
+            QJsonObject obj = array[i].toObject();
+        }
 
+    } else if(msg.contains("Identifier")){
+
+    }
 }
+
+/*{"Identifier":"a","Scope":0,"Type":"int","Value":"1*(2+7)"}
+{"Variables":[{"Identifier":"b","Scope":0,"Type":"int","Value":"0"}]}*/
 
 
