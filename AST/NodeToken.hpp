@@ -2,6 +2,16 @@
 // Created by Roger Valderrama on 4/10/18.
 //
 
+/**
+ * @file NodeToken.hpp
+ * @version 1.0
+ * @date 4/10/18
+ * @author Roger Valderrama
+ * @title
+ * @brief
+ */
+
+
 #ifndef C_IDE_NODETOKEN_HPP
 #define C_IDE_NODETOKEN_HPP
 
