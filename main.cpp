@@ -8,13 +8,13 @@
 
 
 int main(int argc, char *argv[]) {
-    /*loguru::init(argc, argv);
+    loguru::init(argc, argv);
     loguru::add_file("C_IDE_log.log", loguru::Truncate, loguru::Verbosity_INFO);
     LOG_F(INFO, "C! IDE started");
     QApplication a(argc, argv);
     MainWindow window;
     window.show();
-    return QApplication::exec();*/
+    return QApplication::exec();
 
 /*    QJsonObject obj;
     obj.insert("Value", "2");
@@ -36,19 +36,23 @@ int main(int argc, char *argv[]) {
 
     int i = 9;
     char* a = (char*)&i;*/
-
+/*
     char* mem = (char*)malloc(sizeof(char)*1024);
     int a = 8;
     int b = 5;
     double c = 3.2;
+    std::cout << c << std::endl;
     char* dir_ptr_a = &*(mem + 0);
     char* dir_ptr_c = &*(mem + sizeof(int));
     char* dir_ptr_b = &*(mem + (sizeof(int) + sizeof(double)));
     *dir_ptr_a = 8;
-    *dir_ptr_c = 3.2;
+    *(double*)dir_ptr_c = 3.2;
     *dir_ptr_b = 5;
-    std::cout << "a: " << a << " From mem: " << (int)*dir_ptr_a << std::endl;
-    std::cout << "c: " << c << " From mem: " << (double)*dir_ptr_c << std::endl;
-    std::cout << "b: " << b << " From mem: " << (int)*dir_ptr_b << std::endl;
+    std::cout << "a: " << a << " From mem: " << *(int*)dir_ptr_a << std::endl;
+    std::cout << "c: " << c << " From mem: " << *(double*)dir_ptr_c << std::endl;
+    std::cout << "b: " << b << " From mem: " << *(int*)dir_ptr_b << std::endl;
+
+    double e = *(double*)dir_ptr_c;
+    std::cout << e << std::endl;*/
 }
 

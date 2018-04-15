@@ -10,6 +10,8 @@
 
 class MemoryNode {
 public:
+    MemoryNode();
+
     void setBegining(char *begining);
 
     void setType(const std::string &type);
@@ -22,10 +24,15 @@ public:
 
     const std::string &getType() const;
 
+    int getReferences();
+
+    void setReferences(int total);
+
 private:
     char* begining;
     std::string type;
     std::string identifier;
+    int references;
 };
 
 

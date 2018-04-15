@@ -72,21 +72,23 @@ void LocalServer::read(){
         int test = in.readRawData (temp, length);
         buffer.append (temp, length);
         //Crea un json desde los datos recibidos y elimina los primero 4 bytes
+        std::cout << "Buffer: " << buffer.toStdString() << std::endl;
         QJsonDocument receivedData = QJsonDocument::fromJson(buffer.remove(0,4));
         QString jsonString = receivedData.toJson(QJsonDocument::Compact);
         std::cout << "Read-LocalServer: Qstring from json: " << jsonString.toStdString() << std::endl;
         const char* logMsg = jsonString.toUtf8().constData();
-        LOG_F(INFO, "%s", logMsg);
-
+        LOG_F(INFO, logMsg);
 
         QJsonObject json = receivedData.object();
         QJsonArray array = json["Contents"].toArray();
         if(json["Subject"] == "Total_Malloc")
             memoryAllocation(array[0].toObject().value("Value").toInt());
+        else if(json["Subject"] == "RAM_data")
+            send(getRAMdata());
         else
             readMsg(json);
-        //else if(json["Subject"] == "RAM_data")
-            //send(getRAMdata());
+        std::cout << "about to send ram data" << std::endl;
+        send(getRAMdata());
     }
     else
         LOG_F(INFO, "No message to read.");
@@ -96,23 +98,69 @@ void LocalServer::memoryAllocation(int total) {
     memoryBlock = (char*)malloc(sizeof(char)*total);
     size_t size = malloc_usable_size(memoryBlock);;
     //Eliminar después
-    const char* msg = (char)size + " bytes were allocated";
-    LOG_F(INFO, msg);
+    //const char* msg = (char)size + " bytes were allocated";
+    //LOG_F(INFO, msg);
     std::cout << "Malloc size: " << size << std::endl;
 }
 
 QJsonDocument LocalServer::getRAMdata() {
-    QJsonDocument *json = new QJsonDocument();
-    return *json;
+    QJsonArray array;
+    Node<MemoryNode>* temp = list->getHead();
+
+    for(int i = 0; i < list->getSize(); ++i){
+        QJsonObject var;
+
+        std::string dir = temp->getData().getBegining();
+        QString dir_data = QString::fromStdString(dir);
+        var.insert("Direction", dir_data);
+
+        std::string name = temp->getData().getIdentifier();
+        QString name_data = QString::fromStdString(name);
+        var.insert("Name", name_data);
+
+        int ref = temp->getData().getReferences();
+        var.insert("References", ref);
+
+        char* dir_value = temp->getData().getBegining();
+
+        std::string type = temp->getData().getType();
+        if (type == "int") {
+            int val = *(int*)dir_value;
+            var.insert("Value", val);
+        } else if (type == "float") {
+            float val = *(float*)dir_value;
+            var.insert("Value", val);
+        } else if (type == "double") {
+            double val = *(double*)dir_value;
+            var.insert("Value", val);
+        } else if (type == "char") {
+            char val = *dir_value;
+            var.insert("Value", val);
+        } else if (type == "long") {
+            long val = *(long*)dir_value;
+            //Cast for long
+            QVariant v = QVariant::fromValue(val);
+            QJsonValue vv = QJsonValue::fromVariant(v);
+            var.insert("Value", vv);
+        } else if (type == "struct") {
+
+        }
+        array.push_back(var);
+        temp = temp->getNext();
+    }
+    QJsonObject obj;
+    obj.insert("Subject", "RAM");
+    obj.insert("Contents", array);
+    QJsonDocument json(obj);
+    return json;
 }
 
 void LocalServer::readMsg(QJsonObject &msg) {
+    MemoryNode memNode;
     if(msg.contains("Variables")){
         QJsonArray array = msg["Variables"].toArray();
         for(int i = 0; i < array.size(); ++i){
             QJsonObject obj = array[i].toObject();
-
-            MemoryNode memNode;
 
             std::string identifier = obj.value("Identifier").toString().toStdString();
             std::cout << "Identifier: " << identifier << std::endl;
@@ -125,7 +173,6 @@ void LocalServer::readMsg(QJsonObject &msg) {
             std::string value = obj.value("Value").toString().toStdString();
             if(type == "int"){
                 try {
-                    //Posibles errores de punteros
                     int var = boost::lexical_cast<int>(value);
 
                     char* ptr_dir_var = &*(memoryBlock + getBytesToMove());
@@ -134,8 +181,12 @@ void LocalServer::readMsg(QJsonObject &msg) {
                     std::cout << "Value: " << var << std::endl;
                     memNode.setBegining(ptr_dir_var);
 
+                    memNode.setReferences(1);
+                    list->insertRear(memNode);
+
                 } catch( boost::bad_lexical_cast const& ) {
                     std::cout << "Error: input string was not valid" << std::endl;
+                    LOG_F(ERROR, " input string was not valid");
                 }
             }else if (type == "float") {
                 try {
@@ -147,6 +198,9 @@ void LocalServer::readMsg(QJsonObject &msg) {
 
                     std::cout << "Value: " << var << std::endl;
                     memNode.setBegining(ptr_dir_var);
+
+                    memNode.setReferences(1);
+                    list->insertRear(memNode);
 
                 } catch (boost::bad_lexical_cast const &) {
                     std::cout << "Error: input string was not valid" << std::endl;
@@ -163,6 +217,9 @@ void LocalServer::readMsg(QJsonObject &msg) {
                     std::cout << "Value: " << var << std::endl;
                     memNode.setBegining(ptr_dir_var);
 
+                    memNode.setReferences(1);
+                    list->insertRear(memNode);
+
                 } catch( boost::bad_lexical_cast const& ) {
                     std::cout << "Error: input string was not valid" << std::endl;
                 }
@@ -177,6 +234,9 @@ void LocalServer::readMsg(QJsonObject &msg) {
 
                     std::cout << "Value: " << var << std::endl;
                     memNode.setBegining(ptr_dir_var);
+
+                    memNode.setReferences(1);
+                    list->insertRear(memNode);
 
                 } catch( boost::bad_lexical_cast const& ) {
                     std::cout << "Error: input string was not valid" << std::endl;
@@ -193,6 +253,9 @@ void LocalServer::readMsg(QJsonObject &msg) {
                     std::cout << "Value: " << var << std::endl;
                     memNode.setBegining(ptr_dir_var);
 
+                    memNode.setReferences(1);
+                    list->insertRear(memNode);
+
                 } catch( boost::bad_lexical_cast const& ) {
                     std::cout << "Error: input string was not valid" << std::endl;
                 }
@@ -203,7 +266,6 @@ void LocalServer::readMsg(QJsonObject &msg) {
         }
 
     } else if(msg.contains("Identifier")){
-        MemoryNode memNode;
 
         std::string identifier = msg.value("Identifier").toString().toStdString();
         std::cout << "Identifier: " << identifier << std::endl;
@@ -218,12 +280,14 @@ void LocalServer::readMsg(QJsonObject &msg) {
             try {
                 //Posibles errores de punteros
                 int var = boost::lexical_cast<int>(value);
-
                 char* ptr_dir_var = &*(memoryBlock + getBytesToMove());
                 *ptr_dir_var = boost::lexical_cast<int>(value);
 
                 std::cout << "Value: " << var << std::endl;
                 memNode.setBegining(ptr_dir_var);
+
+                memNode.setReferences(1);
+                list->insertRear(memNode);
 
             } catch( boost::bad_lexical_cast const& ) {
                 std::cout << "Error: input string was not valid" << std::endl;
@@ -238,6 +302,9 @@ void LocalServer::readMsg(QJsonObject &msg) {
 
                 std::cout << "Value: " << var << std::endl;
                 memNode.setBegining(ptr_dir_var);
+
+                memNode.setReferences(1);
+                list->insertRear(memNode);
 
             } catch (boost::bad_lexical_cast const &) {
                 std::cout << "Error: input string was not valid" << std::endl;
@@ -254,6 +321,9 @@ void LocalServer::readMsg(QJsonObject &msg) {
                 std::cout << "Value: " << var << std::endl;
                 memNode.setBegining(ptr_dir_var);
 
+                memNode.setReferences(1);
+                list->insertRear(memNode);
+
             } catch( boost::bad_lexical_cast const& ) {
                 std::cout << "Error: input string was not valid" << std::endl;
             }
@@ -268,6 +338,9 @@ void LocalServer::readMsg(QJsonObject &msg) {
 
                 std::cout << "Value: " << var << std::endl;
                 memNode.setBegining(ptr_dir_var);
+
+                memNode.setReferences(1);
+                list->insertRear(memNode);
 
             } catch( boost::bad_lexical_cast const& ) {
                 std::cout << "Error: input string was not valid" << std::endl;
@@ -284,6 +357,9 @@ void LocalServer::readMsg(QJsonObject &msg) {
                 std::cout << "Value: " << var << std::endl;
                 memNode.setBegining(ptr_dir_var);
 
+                memNode.setReferences(1);
+                list->insertRear(memNode);
+
             } catch( boost::bad_lexical_cast const& ) {
                 std::cout << "Error: input string was not valid" << std::endl;
             }
@@ -291,6 +367,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
         } else if (type == "struct") {
             //Struct not ready
         }
+
     }
 }
 
@@ -316,6 +393,8 @@ size_t LocalServer::getBytesToMove() {
             temp = temp->getNext();
         }
     }
+    std::cout << "Total bytes to move: " << std::endl;
+    std::cout << totalBytes << std::endl;
     return totalBytes;
 }
 /*{"Identifier":"a","Scope":0,"Type":"int","Value":"1*(2+7)"}

@@ -132,7 +132,7 @@ MainWindow::MainWindow() {
 
     updateAppLog();
 
-    codeEditor->setPlainText("int a = 1*(2+7);\n struct {int b = 0;\n };\nint c = 9;\n char d = '8'");
+    codeEditor->setPlainText("int a = 1;\n struct {int b = 0;\n };\nint c = 9;\n char d = '8';");
 
     //Server Stuff
     server = new LocalServer(this);
@@ -161,7 +161,7 @@ void MainWindow::runBtnHandler() {
         startServer();
         bool ok;
         int i = QInputDialog::getInt(this, tr("Set total memory"),
-                                     tr("Enter total memory"), 1, 1, 1000, 1, &ok);
+                                     tr("Enter total memory"), 1024, 1, 10240, 1, &ok);
         if (ok && i != 0) {
             client_send(jsonParser->writeMallocRequest(i));
         }
@@ -181,7 +181,6 @@ void MainWindow::runBtnHandler() {
 //METODO DEL BOTON CLEAR
 void MainWindow::clearBtnHandler() {
     applicationLog->clear();
-    //useParser();
 }
 
 //Método del botón stop
@@ -201,7 +200,7 @@ void MainWindow::stepBtnHandler() {
     QStringList lines = codeEditor->toPlainText().split('\n', QString::SkipEmptyParts);
     if (currentLine < codeEditor->document()->blockCount()) {
         client_send(useParser());
-        //client_send(lines.at(currentLine));
+        //client_send(jsonParser->writeRAMDataRequest());
         updateAppLog();
         currentLine += 1;
     } else
@@ -301,26 +300,29 @@ void MainWindow::setModel() {
 }
 
 void MainWindow::updateLiveRAMView(QJsonObject &json) {
-    QList<QStandardItem *> column;
+    setModel();
+    QJsonDocument doc(json);
+    std::cout << "Ram view json: " << doc.toJson(QJsonDocument::Compact).toStdString() << std::endl;
     QJsonArray contents = json["Contents"].toArray();
+    for(int i = 0; i < contents.size(); ++i) {
+        QList<QStandardItem *> column;
 
-    QStandardItem *direction =
-            new QStandardItem(contents[0].toObject().value("Direction").toInt());
-    column.append(direction);
+        QStandardItem *direction =
+                new QStandardItem(contents[i].toObject().value("Direction").toString());
+        column.append(direction);
 
-    QStandardItem *name =
-            new QStandardItem(contents[0].toObject().value("Name").toString());
-    column.append(name);
+        QStandardItem *name =
+                new QStandardItem(contents[i].toObject().value("Name").toString());
+        column.append(name);
+        QStandardItem *value =
+                new QStandardItem(contents[i].toObject().value("Value").toString());
+        column.append(value);
 
-    QStandardItem *value =
-            new QStandardItem(contents[0].toObject().value("Value").toString());
-    column.append(value);
-
-    QStandardItem *references =
-            new QStandardItem(contents[0].toObject().value("References").toInt());
-    column.append(references);
-
-    model->appendRow(column);
+        QStandardItem *references =
+                new QStandardItem(contents[i].toObject().value("References").toString());
+        column.append(references);
+        model->appendRow(column);
+    }
 }
 
 QJsonDocument MainWindow::useParser() {

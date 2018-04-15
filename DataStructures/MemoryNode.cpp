@@ -4,6 +4,11 @@
 
 #include "MemoryNode.h"
 
+MemoryNode::MemoryNode() {
+    references = 0;
+    begining = nullptr;
+}
+
 void MemoryNode::setBegining(char *begining) {
     MemoryNode::begining = begining;
 }
@@ -26,4 +31,12 @@ char *MemoryNode::getBegining() const {
 
 const std::string &MemoryNode::getType() const {
     return type;
+}
+
+int MemoryNode::getReferences() {
+    return references;
+}
+
+void MemoryNode::setReferences(int total) {
+    this->references = total;
 }
