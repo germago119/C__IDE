@@ -55,6 +55,7 @@ void JSONVar::addValue(std::string value, NodeToken *token) {
             return;
         }
         if (pJSONVar->get("Type") != this->get("Type")) {
+            LOG_F(ERROR, "Types don't match");
             std::cout << "types don't match" << std::endl;
             return;
         }

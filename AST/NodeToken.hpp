@@ -19,6 +19,9 @@
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 
+/**
+ * @brief Enum for the posible Types of token.
+ */
 enum TokenType {
     IDENTIFIER = 2,
     STRUCT = 3,
@@ -43,6 +46,10 @@ public:
     TokenType type;
     std::string value;
 
+    /**
+    * @brief Constructor that needs a value.
+     * @param value.
+    */
     explicit NodeToken(std::string value);
 };
 

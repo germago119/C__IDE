@@ -21,18 +21,41 @@
 
 
 class JSONStruct {
+    /**
+     * @brief An array oj Json for the variables of the line of code.
+     */
     QJsonArray *variables = new QJsonArray;
+
+    /**
+     * @brief json that represent the JsonObject that will be modified.
+     */
     QJsonObject *json = new QJsonObject;
 
 public:
+    /**
+    * @brief It add all variables to a Json and it prints it and add it to the log file.
+    */
     void submit();
 
+    /**
+    * @brief Converts the JSON into a char so it can be added to the log file.
+    */
     const char *toLog();
 
+    /**
+    * @brief Converts the JSON into a string.
+    */
     std::string toString();
 
+    /**
+    * @brief It adds Variables to the JSON for struct.
+     * @param jsonVar each json variable it will add.
+    */
     void add(JSONVar *jsonVar);
 
+    /**
+     * @brief It inserts to the JSON each key with its value.
+    */
     void put(std::string, std::string);
 };
 
