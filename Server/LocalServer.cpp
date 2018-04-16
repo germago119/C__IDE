@@ -1,10 +1,7 @@
 //
 // Created by karina on 29/03/18.
 //
-
-#include <DataStructures/MemoryNode.h>
 #include "LocalServer.h"
-#include "Server/loguru.hpp"
 
 LocalServer::LocalServer(QObject *parent) : QLocalServer(parent)
 {
@@ -72,10 +69,8 @@ void LocalServer::read(){
         int test = in.readRawData (temp, length);
         buffer.append (temp, length);
         //Crea un json desde los datos recibidos y elimina los primero 4 bytes
-        std::cout << "Buffer: " << buffer.toStdString() << std::endl;
         QJsonDocument receivedData = QJsonDocument::fromJson(buffer.remove(0,4));
         QString jsonString = receivedData.toJson(QJsonDocument::Compact);
-        std::cout << "Read-LocalServer: Qstring from json: " << jsonString.toStdString() << std::endl;
         const char* logMsg = jsonString.toUtf8().constData();
         LOG_F(INFO, logMsg);
 
@@ -87,7 +82,6 @@ void LocalServer::read(){
             send(getRAMdata());
         else
             readMsg(json);
-        std::cout << "about to send ram data" << std::endl;
         send(getRAMdata());
     }
     else
@@ -96,11 +90,12 @@ void LocalServer::read(){
 
 void LocalServer::memoryAllocation(int total) {
     memoryBlock = (char*)malloc(sizeof(char)*total);
-    size_t size = malloc_usable_size(memoryBlock);;
-    //Eliminar después
-    //const char* msg = (char)size + " bytes were allocated";
-    //LOG_F(INFO, msg);
-    std::cout << "Malloc size: " << size << std::endl;
+    size_t size = malloc_usable_size(memoryBlock);
+    std::stringstream ss;
+    ss << size;
+    std::string s = ss.str();
+    s.append(" bytes were allocated");
+    LOG_F(INFO, s.data());
 }
 
 QJsonDocument LocalServer::getRAMdata() {
@@ -126,15 +121,20 @@ QJsonDocument LocalServer::getRAMdata() {
         std::string type = temp->getData().getType();
         if (type == "int") {
             int val = *(int*)dir_value;
+            std::cout << "Value retrieved from mem: " << val << std::endl;
             var.insert("Value", val);
         } else if (type == "float") {
             float val = *(float*)dir_value;
+            std::cout << "Value retrieved from mem: " << val << std::endl;
             var.insert("Value", val);
         } else if (type == "double") {
             double val = *(double*)dir_value;
+            std::cout << "Value retrieved from mem: " << val << std::endl;
             var.insert("Value", val);
         } else if (type == "char") {
             char val = *dir_value;
+            std::cout << "Value retrieved from mem: " << std::endl;
+            std::cout << val << std::endl;
             var.insert("Value", val);
         } else if (type == "long") {
             long val = *(long*)dir_value;
@@ -180,7 +180,8 @@ void LocalServer::readMsg(QJsonObject &msg) {
 
                     std::cout << "Value: " << var << std::endl;
                     memNode.setBegining(ptr_dir_var);
-
+                    std::cout << "MEEEEEEH" << std::endl;
+                    std::cout << "Val stored in mem: " << *(int*)memNode.getBegining() << std::endl;
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 

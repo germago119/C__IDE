@@ -24,9 +24,11 @@
 #include <QtCore/QJsonDocument>
 #include <malloc.h>
 #include <boost/lexical_cast.hpp>
-#include <boost/lexical_cast.hpp>
 #include <DataStructures/SimpleLinkedList.h>
 #include <DataStructures/MemoryNode.h>
+#include <sstream>
+#include <DataStructures/MemoryNode.h>
+#include "Server/loguru.hpp"
 
 class QLocalSocket;
 class LocalServer : public QLocalServer
@@ -62,17 +64,17 @@ private:
      */
     JSONparser *parser;
 
+    char* memoryBlock = nullptr;
+
+    SimpleLinkedList<MemoryNode> *list;
+
+    size_t getBytesToMove();
+
     void memoryAllocation(int total);
 
     void readMsg(QJsonObject &msg);
 
     QJsonDocument getRAMdata();
-
-    char *memoryBlock = nullptr;
-
-    SimpleLinkedList<MemoryNode> *list;
-
-    size_t getBytesToMove();
 
 signals:
 

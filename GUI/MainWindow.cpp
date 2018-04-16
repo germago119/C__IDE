@@ -237,8 +237,6 @@ void MainWindow::client_read() {
     QString jsonString = receivedData.toJson(QJsonDocument::Compact);
     QJsonObject json = receivedData.object();
 
-    std::cout << "Client read-MainWindow: Qstring from json: " << jsonString.toStdString() << std::endl;
-
     if(json["Subject"] == "RAM"){
         updateLiveRAMView(json);
     }
@@ -293,8 +291,8 @@ void MainWindow::setModel() {
     //Set model to ramview
     model = new QStandardItemModel(0,4,this); //0 Rows and 4 Columns
     model->setHorizontalHeaderItem(0, new QStandardItem(QString("Direction")));
-    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Value")));
-    model->setHorizontalHeaderItem(2, new QStandardItem(QString("Name")));
+    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Name")));
+    model->setHorizontalHeaderItem(2, new QStandardItem(QString("Value")));
     model->setHorizontalHeaderItem(3, new QStandardItem(QString("References")));
     ramview->setModel(model);
 }
@@ -319,7 +317,7 @@ void MainWindow::updateLiveRAMView(QJsonObject &json) {
         column.append(value);
 
         QStandardItem *references =
-                new QStandardItem(contents[i].toObject().value("References").toString());
+                new QStandardItem(contents[i].toObject().value("References").toInt());
         column.append(references);
         model->appendRow(column);
     }
