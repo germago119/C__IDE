@@ -21,7 +21,6 @@ std::vector<NodeToken *> *Lexer(std::string code) {
     return result;
 }
 
-
 std::vector<NodeToken *> *NodeTokens = nullptr;
 
 void parseCode(std::string code) {

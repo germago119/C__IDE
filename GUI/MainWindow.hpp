@@ -19,8 +19,14 @@ class MainWindow : public QMainWindow {
 Q_OBJECT
 
 public:
+    /**
+    * @brief Constructor of the GUI.
+    */
     MainWindow();
 
+    /**
+    * @brief Destructor of MainWindow.
+     */
     ~MainWindow() override;
 
 private:
@@ -48,8 +54,14 @@ private:
 
     QStandardItemModel *model;
 
+    /**
+    * @brief Updates the QTextBrowser for the GUI log.
+    */
     void updateAppLog();
 
+    /**
+    * @brief Sets model for the RAMView.
+    */
     void setModel();
 
     //Botón para ejecutar por pasos
@@ -62,26 +74,62 @@ private:
 
     QLocalSocket *socket;
     LocalServer *server;
+
+    /**
+    * @brief Send a QString msg through a socket.
+    */
     void client_send(const QString &msg);
+
+    /**
+    * @brief Send a Json msg through a socket.
+    */
     void client_send(const QJsonDocument &msg);
+
+    /**
+    * @brief Read what the server send through a socket.
+     */
     void client_read();
-    int currentLine;
+
+    /**
+    * @brief Starts and sets up the server.
+    */
     void startServer();
 
+    /**
+    * @brief Update the QTableView as it parsers the code.
+    */
     void updateLiveRAMView(QJsonObject &message);
+
+    int currentLine;
 
 
 private slots:
 
+    /**
+    * @brief Controller for the Run Button.
+    */
     void runBtnHandler();
 
+    /**
+    * @brief Controller for the Clear Button.
+    */
     void clearBtnHandler();
 
+    /**
+    * @brief Controller for the Stop Button.
+     */
     void stopBtnHandler();
+
+    /**
+     * @brief Controller for the Step Button.
+     */
     void stepBtnHandler();
 
 private slots:
 
+    /**
+     * @brief Call parseCode method so it can parse code from CodeEditor.
+     */
     QJsonDocument useParser();
 };
 

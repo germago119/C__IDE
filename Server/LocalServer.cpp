@@ -6,6 +6,16 @@
 #include "LocalServer.h"
 #include "Server/loguru.hpp"
 
+#ifdef __APPLE__
+
+#include <malloc/malloc.h>
+
+#endif
+#ifdef __linux__
+#include <malloc.h>
+#endif
+
+
 LocalServer::LocalServer(QObject *parent) : QLocalServer(parent)
 {
     clientSocket = nullptr;
@@ -96,11 +106,19 @@ void LocalServer::read(){
 
 void LocalServer::memoryAllocation(int total) {
     memoryBlock = (char*)malloc(sizeof(char)*total);
-    size_t size = malloc_usable_size(memoryBlock);;
+
+#ifdef __APPLE__
+    size_t size = malloc_size(memoryBlock);
+    std::cout << "Malloc size: " << size << std::endl;
+
+#elif defined(__linux__)
+    size_t size = malloc_usable_size(memoryBlock);
+    std::cout << "Malloc size: " << size << std::endl;
     //Eliminar después
     //const char* msg = (char)size + " bytes were allocated";
     //LOG_F(INFO, msg);
-    std::cout << "Malloc size: " << size << std::endl;
+#endif
+//    free(memoryBlock);
 }
 
 QJsonDocument LocalServer::getRAMdata() {

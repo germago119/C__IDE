@@ -22,7 +22,6 @@
 #include <QMessageBox>
 #include <JSON/JSONparser.h>
 #include <QtCore/QJsonDocument>
-#include <malloc.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/lexical_cast.hpp>
 #include <DataStructures/SimpleLinkedList.h>
@@ -37,7 +36,7 @@ public:
      * @brief Constructor
      * @param parent Objeto padre donde se llama la clase
      */
-    explicit LocalServer(QObject *parent = 0);
+    explicit LocalServer(QObject *parent = nullptr);
     /**
      * @brief Envía un mensaje al cliente a través del QLocalSocket
      * @param msg Mensaje de tipo QString
