@@ -133,7 +133,7 @@ MainWindow::MainWindow() {
 
     updateAppLog();
 
-    codeEditor->setPlainText("int a = 1;\n struct {int b = 0;\n };\nint c = 9;\n char d = 8;");
+    codeEditor->setPlainText("int a = 1;\n struct {int b = 0;\n };\nint c = 9;\n char d = 8;\n float e =  33554424.000000;\n long f = 21474836479;\n double g =  33554424.00000000000000; ");
 
     //Server Stuff
     server = new LocalServer(this);

@@ -124,7 +124,6 @@ QJsonDocument LocalServer::getRAMdata() {
     for(int i = 0; i < list->getSize(); ++i){
         QJsonObject var;
 
-
         std::string name = temp->getData().getIdentifier();
         QString name_data = QString::fromStdString(name);
         var.insert("Name", name_data);
@@ -147,7 +146,9 @@ QJsonDocument LocalServer::getRAMdata() {
 
         } else if (type == "float") {
             float val = *(float*)(memoryBlock + temp->getData().getBegining());
-            var.insert("Value", val);
+            QVariant v = QVariant::fromValue(val);
+            QString st = QString::fromStdString(v.toString().toStdString());
+            var.insert("Value", st);
 
             std::ostringstream oss;
             oss << (void const*)(float*)(memoryBlock + initial_byte);
@@ -164,9 +165,10 @@ QJsonDocument LocalServer::getRAMdata() {
             QString str = QString::fromStdString(s);
             var.insert("Direction", str);
         } else if (type == "char") {
-            char val = *(memoryBlock + temp->getData().getBegining());
-            std::cout << val << std::endl;
-            var.insert("Value", val);
+            char val = *(memoryBlock + initial_byte);
+            QVariant v = QVariant::fromValue(val);
+            QJsonValue vv = QJsonValue::fromVariant(v);
+            var.insert("Value", vv);
 
             std::ostringstream oss;
             oss << (void const*)(memoryBlock + initial_byte);
@@ -195,6 +197,7 @@ QJsonDocument LocalServer::getRAMdata() {
     obj.insert("Subject", "RAM");
     obj.insert("Contents", array);
     QJsonDocument json(obj);
+    std::cout << "json to  send: " << json.toJson(QJsonDocument::Compact).toStdString() << std::endl;
     return json;
 }
 
@@ -336,7 +339,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
         } else if (type == "long") {
             try {
                 size_t firstByte = getBytesToMove();
-                *(long *) (memoryBlock + firstByte) = boost::lexical_cast<long>(value);
+                *(long *)(memoryBlock + firstByte) = boost::lexical_cast<long>(value);
                 memNode.setBegining(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
