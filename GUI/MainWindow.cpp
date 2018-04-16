@@ -19,6 +19,7 @@ MainWindow::MainWindow() {
     highlighter = new Highlighter(codeEditor->document());
 
     ramview = new QTableView();
+    ramview->setEditTriggers(QAbstractItemView::NoEditTriggers);
     centralWidget = new QWidget();
     auto *applogWidget = new QWidget();
 
@@ -132,7 +133,7 @@ MainWindow::MainWindow() {
 
     updateAppLog();
 
-    codeEditor->setPlainText("int a = 1;\n struct {int b = 0;\n };\nint c = 9;\n char d = '8';");
+    codeEditor->setPlainText("int a = 1;\n struct {int b = 0;\n };\nint c = 9;\n char d = 8;");
 
     //Server Stuff
     server = new LocalServer(this);
@@ -300,9 +301,10 @@ void MainWindow::setModel() {
 void MainWindow::updateLiveRAMView(QJsonObject &json) {
     setModel();
     QJsonDocument doc(json);
-    std::cout << "Ram view json: " << doc.toJson(QJsonDocument::Compact).toStdString() << std::endl;
     QJsonArray contents = json["Contents"].toArray();
     for(int i = 0; i < contents.size(); ++i) {
+        QJsonDocument d(contents[i].toObject());
+        std::cout << d.toJson(QJsonDocument::Compact).toStdString() << std::endl;
         QList<QStandardItem *> column;
 
         QStandardItem *direction =
@@ -310,14 +312,19 @@ void MainWindow::updateLiveRAMView(QJsonObject &json) {
         column.append(direction);
 
         QStandardItem *name =
-                new QStandardItem(contents[i].toObject().value("Name").toString());
+                new QStandardItem(contents[i].toObject().value("Name").toString("no name"));
         column.append(name);
-        QStandardItem *value =
-                new QStandardItem(contents[i].toObject().value("Value").toString());
+
+        QVariant val = contents[i].toObject().value("Value").toVariant();
+        QString s = QString::fromStdString(val.toString().toStdString());
+        QStandardItem* value =
+                new QStandardItem(s);
         column.append(value);
 
+        int ref = contents[i].toObject().value("References").toInt(0);
+        QString ss = QString::fromStdString(std::to_string(ref));
         QStandardItem *references =
-                new QStandardItem(contents[i].toObject().value("References").toInt());
+                new QStandardItem(ss);
         column.append(references);
         model->appendRow(column);
     }

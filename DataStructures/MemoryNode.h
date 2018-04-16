@@ -12,7 +12,7 @@ class MemoryNode {
 public:
     MemoryNode();
 
-    void setBegining(char *begining);
+    void setBegining(size_t first_byte);
 
     void setType(const std::string &type);
 
@@ -20,7 +20,7 @@ public:
 
     void setIdentifier(const std::string &identifier);
 
-    char *getBegining() const;
+    size_t getBegining();
 
     const std::string &getType() const;
 
@@ -29,7 +29,7 @@ public:
     void setReferences(int total);
 
 private:
-    char* begining;
+    size_t begining;
     std::string type;
     std::string identifier;
     int references;

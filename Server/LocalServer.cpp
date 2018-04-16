@@ -100,25 +100,21 @@ void LocalServer::read(){
 
 void LocalServer::memoryAllocation(int total) {
     memoryBlock = (char*)malloc(sizeof(char)*total);
-    size_t size = malloc_usable_size(memoryBlock);
+    size_t size;
+
+#ifdef __APPLE__
+    size = malloc_size(memoryBlock);
+    std::cout << "Malloc size: " << size << std::endl;
+
+#elif defined(__linux__)
+    size = malloc_usable_size(memoryBlock);
+#endif
+
     std::stringstream ss;
     ss << size;
     std::string s = ss.str();
     s.append(" bytes were allocated");
     LOG_F(INFO, s.data());
-
-#ifdef __APPLE__
-    size_t size = malloc_size(memoryBlock);
-    std::cout << "Malloc size: " << size << std::endl;
-
-#elif defined(__linux__)
-    size_t size = malloc_usable_size(memoryBlock);
-    std::cout << "Malloc size: " << size << std::endl;
-    //Eliminar después
-    //const char* msg = (char)size + " bytes were allocated";
-    //LOG_F(INFO, msg);
-#endif
-//    free(memoryBlock);
 }
 
 QJsonDocument LocalServer::getRAMdata() {
@@ -128,9 +124,6 @@ QJsonDocument LocalServer::getRAMdata() {
     for(int i = 0; i < list->getSize(); ++i){
         QJsonObject var;
 
-        std::string dir = temp->getData().getBegining();
-        QString dir_data = QString::fromStdString(dir);
-        var.insert("Direction", dir_data);
 
         std::string name = temp->getData().getIdentifier();
         QString name_data = QString::fromStdString(name);
@@ -139,32 +132,59 @@ QJsonDocument LocalServer::getRAMdata() {
         int ref = temp->getData().getReferences();
         var.insert("References", ref);
 
-        char* dir_value = temp->getData().getBegining();
+        size_t initial_byte = temp->getData().getBegining();
 
         std::string type = temp->getData().getType();
         if (type == "int") {
-            int val = *(int*)dir_value;
-            std::cout << "Value retrieved from mem: " << val << std::endl;
+            int val = *(int *) (memoryBlock + initial_byte);
             var.insert("Value", val);
+
+            std::ostringstream oss;
+            oss << (void const*)(int*)(memoryBlock + initial_byte);
+            std::string s = oss.str();
+            QString str = QString::fromStdString(s);
+            var.insert("Direction", str);
+
         } else if (type == "float") {
-            float val = *(float*)dir_value;
-            std::cout << "Value retrieved from mem: " << val << std::endl;
+            float val = *(float*)(memoryBlock + temp->getData().getBegining());
             var.insert("Value", val);
+
+            std::ostringstream oss;
+            oss << (void const*)(float*)(memoryBlock + initial_byte);
+            std::string s = oss.str();
+            QString str = QString::fromStdString(s);
+            var.insert("Direction", str);
         } else if (type == "double") {
-            double val = *(double*)dir_value;
-            std::cout << "Value retrieved from mem: " << val << std::endl;
+            double val = *(double*)(memoryBlock + temp->getData().getBegining());
             var.insert("Value", val);
+
+            std::ostringstream oss;
+            oss << (void const*)(double*)(memoryBlock + initial_byte);
+            std::string s = oss.str();
+            QString str = QString::fromStdString(s);
+            var.insert("Direction", str);
         } else if (type == "char") {
-            char val = *dir_value;
-            std::cout << "Value retrieved from mem: " << std::endl;
+            char val = *(memoryBlock + temp->getData().getBegining());
             std::cout << val << std::endl;
             var.insert("Value", val);
+
+            std::ostringstream oss;
+            oss << (void const*)(memoryBlock + initial_byte);
+            std::string s = oss.str();
+            QString str = QString::fromStdString(s);
+            var.insert("Direction", str);
         } else if (type == "long") {
-            long val = *(long*)dir_value;
+            long val = *(long*)(memoryBlock + temp->getData().getBegining());
             //Cast for long
             QVariant v = QVariant::fromValue(val);
             QJsonValue vv = QJsonValue::fromVariant(v);
             var.insert("Value", vv);
+
+            std::ostringstream oss;
+            oss << (void const*)(long*)(memoryBlock + initial_byte);
+            std::string s = oss.str();
+            QString str = QString::fromStdString(s);
+            var.insert("Direction", str);
         } else if (type == "struct") {
 
         }
@@ -180,49 +200,35 @@ QJsonDocument LocalServer::getRAMdata() {
 
 void LocalServer::readMsg(QJsonObject &msg) {
     MemoryNode memNode;
-    if(msg.contains("Variables")){
+    if (msg.contains("Variables")) {
         QJsonArray array = msg["Variables"].toArray();
-        for(int i = 0; i < array.size(); ++i){
+        for (int i = 0; i < array.size(); ++i) {
             QJsonObject obj = array[i].toObject();
 
             std::string identifier = obj.value("Identifier").toString().toStdString();
-            std::cout << "Identifier: " << identifier << std::endl;
             memNode.setIdentifier(identifier);
 
             std::string type = obj.value("Type").toString().toStdString();
-            std::cout << "Type: " << type << std::endl;
             memNode.setType(type);
 
             std::string value = obj.value("Value").toString().toStdString();
-            if(type == "int"){
+            if (type == "int") {
                 try {
-                    int var = boost::lexical_cast<int>(value);
-
-                    char* ptr_dir_var = &*(memoryBlock + getBytesToMove());
-                    *ptr_dir_var = boost::lexical_cast<int>(value);
-
-                    std::cout << "Value: " << var << std::endl;
-                    memNode.setBegining(ptr_dir_var);
-                    std::cout << "MEEEEEEH" << std::endl;
-                    std::cout << "Val stored in mem: " << *(int*)memNode.getBegining() << std::endl;
+                    size_t firstByte = getBytesToMove();
+                    *(int *) (memoryBlock + firstByte) = boost::lexical_cast<int>(value);
+                    memNode.setBegining(firstByte);
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 
-                } catch( boost::bad_lexical_cast const& ) {
+                } catch (boost::bad_lexical_cast const &) {
                     std::cout << "Error: input string was not valid" << std::endl;
                     LOG_F(ERROR, " input string was not valid");
                 }
-            }else if (type == "float") {
+            } else if (type == "float") {
                 try {
-                    //Posibles errores de punteros
-                    float var = boost::lexical_cast<float>(value);
-
-                    char *ptr_dir_var = &*(memoryBlock + getBytesToMove());
-                    *ptr_dir_var = boost::lexical_cast<float>(value);
-
-                    std::cout << "Value: " << var << std::endl;
-                    memNode.setBegining(ptr_dir_var);
-
+                    size_t firstByte = getBytesToMove();
+                    *(float *) (memoryBlock + firstByte) = boost::lexical_cast<float>(value);
+                    memNode.setBegining(firstByte);
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 
@@ -232,55 +238,37 @@ void LocalServer::readMsg(QJsonObject &msg) {
 
             } else if (type == "double") {
                 try {
-                    //Posibles errores de punteros
-                    double var = boost::lexical_cast<double>(value);
-
-                    char* ptr_dir_var = &*(memoryBlock + getBytesToMove());
-                    *ptr_dir_var = boost::lexical_cast<double>(value);
-
-                    std::cout << "Value: " << var << std::endl;
-                    memNode.setBegining(ptr_dir_var);
-
+                    size_t firstByte = getBytesToMove();
+                    *(double *) (memoryBlock + firstByte) = boost::lexical_cast<double>(value);
+                    memNode.setBegining(firstByte);
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 
-                } catch( boost::bad_lexical_cast const& ) {
+                } catch (boost::bad_lexical_cast const &) {
                     std::cout << "Error: input string was not valid" << std::endl;
                 }
 
             } else if (type == "char") {
                 try {
-                    //Posibles errores de punteros
-                    char var = boost::lexical_cast<char>(value);
-
-                    char* ptr_dir_var = &*(memoryBlock + getBytesToMove());
-                    *ptr_dir_var = boost::lexical_cast<char>(value);
-
-                    std::cout << "Value: " << var << std::endl;
-                    memNode.setBegining(ptr_dir_var);
-
+                    size_t firstByte = getBytesToMove();
+                    *(memoryBlock + firstByte) = boost::lexical_cast<char>(value);
+                    memNode.setBegining(firstByte);
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 
-                } catch( boost::bad_lexical_cast const& ) {
+                } catch (boost::bad_lexical_cast const &) {
                     std::cout << "Error: input string was not valid" << std::endl;
                 }
 
             } else if (type == "long") {
                 try {
-                    //Posibles errores de punteros
-                    long var = boost::lexical_cast<long>(value);
-
-                    char* ptr_dir_var = &*(memoryBlock + getBytesToMove());
-                    *ptr_dir_var = boost::lexical_cast<long>(value);
-
-                    std::cout << "Value: " << var << std::endl;
-                    memNode.setBegining(ptr_dir_var);
-
+                    size_t firstByte = getBytesToMove();
+                    *(long *) (memoryBlock + firstByte) = boost::lexical_cast<long>(value);
+                    memNode.setBegining(firstByte);
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 
-                } catch( boost::bad_lexical_cast const& ) {
+                } catch (boost::bad_lexical_cast const &) {
                     std::cout << "Error: input string was not valid" << std::endl;
                 }
 
@@ -289,44 +277,31 @@ void LocalServer::readMsg(QJsonObject &msg) {
             }
         }
 
-    } else if(msg.contains("Identifier")){
+    } else if (msg.contains("Identifier")) {
 
         std::string identifier = msg.value("Identifier").toString().toStdString();
-        std::cout << "Identifier: " << identifier << std::endl;
         memNode.setIdentifier(identifier);
 
         std::string type = msg.value("Type").toString().toStdString();
-        std::cout << "Type: " << type << std::endl;
         memNode.setType(type);
 
         std::string value = msg.value("Value").toString().toStdString();
-        if(type == "int"){
+        if (type == "int") {
             try {
-                //Posibles errores de punteros
-                int var = boost::lexical_cast<int>(value);
-                char* ptr_dir_var = &*(memoryBlock + getBytesToMove());
-                *ptr_dir_var = boost::lexical_cast<int>(value);
-
-                std::cout << "Value: " << var << std::endl;
-                memNode.setBegining(ptr_dir_var);
-
+                size_t firstByte = getBytesToMove();
+                *(int *) (memoryBlock + firstByte) = boost::lexical_cast<int>(value);
+                memNode.setBegining(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
 
-            } catch( boost::bad_lexical_cast const& ) {
+            } catch (boost::bad_lexical_cast const &) {
                 std::cout << "Error: input string was not valid" << std::endl;
             }
-        }else if (type == "float") {
+        } else if (type == "float") {
             try {
-                //Posibles errores de punteros
-                float var = boost::lexical_cast<float>(value);
-
-                char *ptr_dir_var = &*(memoryBlock + getBytesToMove());
-                *ptr_dir_var = boost::lexical_cast<float>(value);
-
-                std::cout << "Value: " << var << std::endl;
-                memNode.setBegining(ptr_dir_var);
-
+                size_t firstByte = getBytesToMove();
+                *(float *) (memoryBlock + firstByte) = boost::lexical_cast<float>(value);
+                memNode.setBegining(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
 
@@ -336,55 +311,37 @@ void LocalServer::readMsg(QJsonObject &msg) {
 
         } else if (type == "double") {
             try {
-                //Posibles errores de punteros
-                double var = boost::lexical_cast<double>(value);
-
-                char* ptr_dir_var = &*(memoryBlock + getBytesToMove());
-                *ptr_dir_var = boost::lexical_cast<double>(value);
-
-                std::cout << "Value: " << var << std::endl;
-                memNode.setBegining(ptr_dir_var);
-
+                size_t firstByte = getBytesToMove();
+                *(double *) (memoryBlock + firstByte) = boost::lexical_cast<double>(value);
+                memNode.setBegining(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
 
-            } catch( boost::bad_lexical_cast const& ) {
+            } catch (boost::bad_lexical_cast const &) {
                 std::cout << "Error: input string was not valid" << std::endl;
             }
 
         } else if (type == "char") {
             try {
-                //Posibles errores de punteros
-                char var = boost::lexical_cast<char>(value);
-
-                char* ptr_dir_var = &*(memoryBlock + getBytesToMove());
-                *ptr_dir_var = boost::lexical_cast<char>(value);
-
-                std::cout << "Value: " << var << std::endl;
-                memNode.setBegining(ptr_dir_var);
-
+                size_t firstByte = getBytesToMove();
+                *(memoryBlock + firstByte) = boost::lexical_cast<char>(value);
+                memNode.setBegining(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
 
-            } catch( boost::bad_lexical_cast const& ) {
+            } catch (boost::bad_lexical_cast const &) {
                 std::cout << "Error: input string was not valid" << std::endl;
             }
 
         } else if (type == "long") {
             try {
-                //Posibles errores de punteros
-                long var = boost::lexical_cast<long>(value);
-
-                char* ptr_dir_var = &*(memoryBlock + getBytesToMove());
-                *ptr_dir_var = boost::lexical_cast<long>(value);
-
-                std::cout << "Value: " << var << std::endl;
-                memNode.setBegining(ptr_dir_var);
-
+                size_t firstByte = getBytesToMove();
+                *(long *) (memoryBlock + firstByte) = boost::lexical_cast<long>(value);
+                memNode.setBegining(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
 
-            } catch( boost::bad_lexical_cast const& ) {
+            } catch (boost::bad_lexical_cast const &) {
                 std::cout << "Error: input string was not valid" << std::endl;
             }
 
@@ -417,8 +374,6 @@ size_t LocalServer::getBytesToMove() {
             temp = temp->getNext();
         }
     }
-    std::cout << "Total bytes to move: " << std::endl;
-    std::cout << totalBytes << std::endl;
     return totalBytes;
 }
 /*{"Identifier":"a","Scope":0,"Type":"int","Value":"1*(2+7)"}
