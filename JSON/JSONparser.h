@@ -27,6 +27,7 @@ public:
      * @return JSON del request de memoria
      */
     QJsonDocument writeMallocRequest(int total_mem);
+
     /**
      * @brief Crea un JSON con formato para solicitar una declaración de variable
      * @param identifier Identificador de la variable
@@ -34,6 +35,7 @@ public:
      * @return JSON del request
      */
     QJsonDocument writeDeclarationRequest(std::string identifier, std::string type);
+
     /**
      * @brief Crea un JSON con formato para solicitar una declaración de variable y su
      * inicialización
@@ -43,6 +45,7 @@ public:
      * @return JSON del request
      */
     QJsonDocument writeDeclarationRequest(std::string identifier, std::string type, std::string value);
+
     /**
      * @brief Crea un JSON para solicitar la asignación de un valor a una variable
      * @param identifier Identificador de la variable
@@ -50,7 +53,9 @@ public:
      * @return JSON del request
      */
     QJsonDocument writeAssignationRequest(std::string identifier, std::string value);
+
     QJsonDocument writeRAMDataRequest();
+
     /**
      * @brief Crea un JSON para solicitar el cálculo de una expresión
      * @param var1 Primer término
@@ -59,6 +64,7 @@ public:
      * @return JSON del request
      */
     QJsonDocument writeExpressionRequest(std::string var1, std::string var2, std::string optr);
+
     /**
      * @brief Crea un JSON con los datos para el LiveRAMView
      * @param dir Dirección de memoria
@@ -67,7 +73,7 @@ public:
      * @param references Cantidad de referencias
      * @return
      */
-    QJsonDocument writeRAMdata(int dir , std::string name, std::string value, int references);
+    QJsonDocument writeRAMdata(int dir, std::string name, std::string value, int references);
 };
 
 

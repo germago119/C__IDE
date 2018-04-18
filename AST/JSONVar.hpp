@@ -7,8 +7,8 @@
  * @version 1.0
  * @date 4/10/18
  * @author Roger Valderrama
- * @title
- * @brief
+ * @title JSON for Variables
+ * @brief JSON Class for saving variables in a structure
  */
 
 
@@ -36,51 +36,51 @@ public:
  */
     const char *toLog();
 
-/**
- * @brief Convert JSON to string.
- */
+    /**
+    * @brief Convert JSON to string.
+     */
     std::string toString();
 
     /**
- * @brief Getter for the json attribute.
- */
+    * @brief Getter for the json attribute.
+    */
     QJsonObject *get();
 
     /**
- * @brief Getter using the key.
- */
+    * @brief Getter using the key.
+    */
     std::string get(std::string);
 
     /**
- * @brief Set up the JSON when the value its an int.
- */
+    * @brief Set up the JSON when the value its an int.
+    */
     void put(std::string, int);
 
     /**
- * @brief Set up the JSON when the value its a char.
- */
+    * @brief Set up the JSON when the value its a char.
+    */
     void put(std::string, char);
 
     /**
- * @brief Set up the JSON when the value its a long.
- */
+    * @brief Set up the JSON when the value its a long.
+    */
     void put(std::string, long);
 
     /**
- * @brief Set up the JSON when the value its a double.
- */
+    * @brief Set up the JSON when the value its a double.
+    */
     void put(std::string, double);
 
     /**
- * @brief Set up the JSON when the value its a string.
- */
+    * @brief Set up the JSON when the value its a string.
+    */
     void put(std::string, std::string);
 
     /**
- * @brief Sets value to each token.
+    * @brief Sets value to each token.
      * @param value
      * @param token
- */
+    */
     void addValue(std::string value, NodeToken *token);
 };
 

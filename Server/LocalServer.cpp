@@ -131,7 +131,7 @@ QJsonDocument LocalServer::getRAMdata() {
         int ref = temp->getData().getReferences();
         var.insert("References", ref);
 
-        size_t initial_byte = temp->getData().getBegining();
+        size_t initial_byte = temp->getData().getBeginning();
 
         std::string type = temp->getData().getType();
         if (type == "int") {
@@ -145,7 +145,7 @@ QJsonDocument LocalServer::getRAMdata() {
             var.insert("Direction", str);
 
         } else if (type == "float") {
-            float val = *(float*)(memoryBlock + temp->getData().getBegining());
+            float val = *(float *) (memoryBlock + temp->getData().getBeginning());
             QVariant v = QVariant::fromValue(val);
             QString st = QString::fromStdString(v.toString().toStdString());
             var.insert("Value", st);
@@ -156,7 +156,7 @@ QJsonDocument LocalServer::getRAMdata() {
             QString str = QString::fromStdString(s);
             var.insert("Direction", str);
         } else if (type == "double") {
-            double val = *(double*)(memoryBlock + temp->getData().getBegining());
+            double val = *(double *) (memoryBlock + temp->getData().getBeginning());
             var.insert("Value", val);
 
             std::ostringstream oss;
@@ -176,7 +176,7 @@ QJsonDocument LocalServer::getRAMdata() {
             QString str = QString::fromStdString(s);
             var.insert("Direction", str);
         } else if (type == "long") {
-            long val = *(long*)(memoryBlock + temp->getData().getBegining());
+            long val = *(long *) (memoryBlock + temp->getData().getBeginning());
             //Cast for long
             QVariant v = QVariant::fromValue(val);
             QJsonValue vv = QJsonValue::fromVariant(v);
@@ -219,7 +219,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
                 try {
                     size_t firstByte = getBytesToMove();
                     *(int *) (memoryBlock + firstByte) = boost::lexical_cast<int>(value);
-                    memNode.setBegining(firstByte);
+                    memNode.setBeginning(firstByte);
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 
@@ -231,7 +231,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
                 try {
                     size_t firstByte = getBytesToMove();
                     *(float *) (memoryBlock + firstByte) = boost::lexical_cast<float>(value);
-                    memNode.setBegining(firstByte);
+                    memNode.setBeginning(firstByte);
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 
@@ -243,7 +243,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
                 try {
                     size_t firstByte = getBytesToMove();
                     *(double *) (memoryBlock + firstByte) = boost::lexical_cast<double>(value);
-                    memNode.setBegining(firstByte);
+                    memNode.setBeginning(firstByte);
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 
@@ -255,7 +255,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
                 try {
                     size_t firstByte = getBytesToMove();
                     *(memoryBlock + firstByte) = boost::lexical_cast<char>(value);
-                    memNode.setBegining(firstByte);
+                    memNode.setBeginning(firstByte);
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 
@@ -267,7 +267,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
                 try {
                     size_t firstByte = getBytesToMove();
                     *(long *) (memoryBlock + firstByte) = boost::lexical_cast<long>(value);
-                    memNode.setBegining(firstByte);
+                    memNode.setBeginning(firstByte);
                     memNode.setReferences(1);
                     list->insertRear(memNode);
 
@@ -293,7 +293,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
             try {
                 size_t firstByte = getBytesToMove();
                 *(int *) (memoryBlock + firstByte) = boost::lexical_cast<int>(value);
-                memNode.setBegining(firstByte);
+                memNode.setBeginning(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
 
@@ -304,7 +304,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
             try {
                 size_t firstByte = getBytesToMove();
                 *(float *) (memoryBlock + firstByte) = boost::lexical_cast<float>(value);
-                memNode.setBegining(firstByte);
+                memNode.setBeginning(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
 
@@ -316,7 +316,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
             try {
                 size_t firstByte = getBytesToMove();
                 *(double *) (memoryBlock + firstByte) = boost::lexical_cast<double>(value);
-                memNode.setBegining(firstByte);
+                memNode.setBeginning(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
 
@@ -328,7 +328,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
             try {
                 size_t firstByte = getBytesToMove();
                 *(memoryBlock + firstByte) = boost::lexical_cast<char>(value);
-                memNode.setBegining(firstByte);
+                memNode.setBeginning(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
 
@@ -340,7 +340,7 @@ void LocalServer::readMsg(QJsonObject &msg) {
             try {
                 size_t firstByte = getBytesToMove();
                 *(long *)(memoryBlock + firstByte) = boost::lexical_cast<long>(value);
-                memNode.setBegining(firstByte);
+                memNode.setBeginning(firstByte);
                 memNode.setReferences(1);
                 list->insertRear(memNode);
 

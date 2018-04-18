@@ -7,8 +7,8 @@
  * @version 1.0
  * @date 4/10/18
  * @author Roger Valderrama
- * @title
- * @brief
+ * @title Tokens for CodeParser
+ * @brief TokenType and NodeToken for CodeParser
  */
 
 

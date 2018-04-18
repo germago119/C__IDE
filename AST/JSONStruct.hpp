@@ -7,8 +7,8 @@
  * @version 1.0
  * @date 4/10/18
  * @author Roger Valderrama
- * @title
- * @brief
+ * @title JSON for Structs
+ * @brief JSON Class for saving structs with its variables.
  */
 
 
@@ -21,6 +21,7 @@
 
 
 class JSONStruct {
+
     /**
      * @brief An array oj Json for the variables of the line of code.
      */

@@ -6,11 +6,11 @@
 
 MemoryNode::MemoryNode() {
     references = 0;
-    begining = NULL;
+    beginning = NULL;
 }
 
-void MemoryNode::setBegining(size_t begining) {
-    MemoryNode::begining = begining;
+void MemoryNode::setBeginning(size_t begining) {
+    MemoryNode::beginning = begining;
 }
 
 void MemoryNode::setType(const std::string &type) {
@@ -25,8 +25,8 @@ void MemoryNode::setIdentifier(const std::string &identifier) {
     MemoryNode::identifier = identifier;
 }
 
-size_t  MemoryNode::getBegining() {
-    return begining;
+size_t MemoryNode::getBeginning() {
+    return beginning;
 }
 
 const std::string &MemoryNode::getType() const {

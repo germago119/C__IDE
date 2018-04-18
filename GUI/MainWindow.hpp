@@ -125,8 +125,6 @@ private slots:
      */
     void stepBtnHandler();
 
-private slots:
-
     /**
      * @brief Call parseCode method so it can parse code from CodeEditor.
      */
