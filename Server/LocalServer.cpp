@@ -4,9 +4,7 @@
 #include "LocalServer.h"
 
 #ifdef __APPLE__
-
 #include <malloc/malloc.h>
-
 #endif
 #ifdef __linux__
 #include <malloc.h>

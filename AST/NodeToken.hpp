@@ -36,21 +36,30 @@ enum TokenType {
     STATEMENT_TERMINATOR = 23, // ;
     OPEN_REFERENCE_BRACKET = 25, // <
     CLOSE_REFERENCE_BRACKET = 27, // >
-    ADDRESS = 29// getAddr()
+    ADDRESS = 29, // getAddr()
+    PRINT = 31, // print func
+    VALUE = 33 //getValue()
 
 };
 
 class NodeToken {
 
 public:
+    int line = 0;
     TokenType type;
     std::string value;
+    static int lineNumber;
 
     /**
     * @brief Constructor that needs a value.
      * @param value.
     */
     explicit NodeToken(std::string value);
+
+    NodeToken(std::string value, TokenType type);
+
+private:
+    TokenType TokenLinter(std::string);
 };
 
 

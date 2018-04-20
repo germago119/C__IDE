@@ -48,27 +48,74 @@ JSONVar *findVariable(const std::string &) {
 };
 
 void JSONVar::addValue(std::string value, NodeToken *token) {
+    std::string errorMessage = "";
+    const char *logError = "";
     if (token->type == IDENTIFIER) {
+        value = token->value;
         JSONVar *pJSONVar = findVariable(token->value);
         if (pJSONVar == nullptr) {
             LOG_F(ERROR, "Variable doesn't exist");
             return;
         }
-        if (pJSONVar->get("Type") != this->get("Type")) {
-            LOG_F(ERROR, "Types don't match");
-            std::cout << "types don't match" << std::endl;
-            return;
-        }
-        value = pJSONVar->get("Value");
     } else if (token->type == CHARACTER) {
-        std::cout << "is " << value << " of type " << this->get("Type") << std::endl;
+        if (this->get("Type") == "long") {
+            try {
+                boost::lexical_cast<long>(value);
+            } catch (boost::bad_lexical_cast) {
+                errorMessage =
+                        "Error in line" + std::to_string(token->line) + " : Variable \"" + this->get("Identifier") +
+                        "\" is not of type long\n";
+                logError = errorMessage.c_str();
+                return LOG_F(ERROR, logError);
+            }
+        } else if (this->get("Type") == "int") {
+            try {
+                boost::lexical_cast<int>(value);
+            } catch (boost::bad_lexical_cast) {
+                errorMessage =
+                        "Error in line" + std::to_string(token->line) + " : Variable \"" + this->get("Identifier") +
+                        "\" is not of type int\n";
+                logError = errorMessage.c_str();
+                return LOG_F(ERROR, logError);
+            }
+        } else if (this->get("Type") == "float") {
+            try {
+                boost::lexical_cast<float>(value);
+            } catch (boost::bad_lexical_cast) {
+                errorMessage =
+                        "Error in line" + std::to_string(token->line) + " : Variable \"" + this->get("Identifier") +
+                        "\" is not of type float\n";
+                logError = errorMessage.c_str();
+                return LOG_F(ERROR, logError);
+            }
+        } else if (this->get("Type") == "double") {
+            try {
+                boost::lexical_cast<double>(value);
+            } catch (boost::bad_lexical_cast) {
+                errorMessage =
+                        "Error in line" + std::to_string(token->line) + " : Variable \"" + this->get("Identifier") +
+                        "\" is not of type double\n";
+                logError = errorMessage.c_str();
+                return LOG_F(ERROR, logError);
+            }
+        } else if (this->get("Type") == "char") {
+            if (!regex_match(value, std::regex("\'[A-Za-z]\'"))) {
+                errorMessage =
+                        "Error in line" + std::to_string(token->line) + " : Variable \"" + this->get("Identifier") +
+                        "\" is not of type double\n";
+                logError = errorMessage.c_str();
+                return LOG_F(ERROR, logError);
+            }
+        }
     } else if (token->type == OPERATOR) {
         std::string type = this->get("Type");
-        if (type != "int" && type != "double" && type != "float" && type != "long") {
-            LOG_F(ERROR, "Invalid Syntax");
-            return;
+        if (type != "int" && type != "double" && type != "float" && type != "long" && type != "") {
+            errorMessage = "Error in line" + std::to_string(token->line) + " : Can't use <" + token->value +
+                           "> operator with non numeric data type\n";
+            logError = errorMessage.c_str();
+            return LOG_F(ERROR, logError);
         }
     }
     this->put("Value", this->get("Value").append(value));
-
+    return LOG_F(INFO, logError);
 }
