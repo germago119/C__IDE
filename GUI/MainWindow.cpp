@@ -139,8 +139,28 @@ MainWindow::MainWindow() {
 
     updateAppLog();
 
-    codeEditor->setPlainText("int a = 1;\n struct {int b = 0;\n };\nint c = 9;\n char d = 8;\n float e =  33554424.000000;\n long f = 21474836479;\n double g =  33554424.00000000000000; ");
+/*    codeEditor->setPlainText("int a = 1;\n"
+                             "char b = 22;\n struct {int b = 0;\nchar charcito = 2;\nfloat floatcito = 2.3; };\n"
+                             "int c = 9;\n"
+                             "char d = 8;\n"
+                             "float e =  335424.005;\n "
+                             "long f = 33333333;\n"
+                             "double g =  33550004.0008;");*/
 
+    codeEditor->setPlainText("int a = 1;\n"
+                             "char b = 22;\n"
+                             "struct {\n"
+                             "int int_struct = 666;\n "
+                             "char char_struct = 2;\n"
+                             "float float_struct = 222.888; \n"
+                             "double double_struct = 55555.6666;\n"
+                             "long long_struct = 23345566677;\n"
+                             "};\n"
+                             "int c = 9;\n"
+                             "char d = 8;\n"
+                             "float e =  335424.005;\n "
+                             "long f = 33333333;\n"
+                             "double g =  33550004.0008;");
     //Server Stuff
     server = new LocalServer(this);
     socket = new QLocalSocket(this);
