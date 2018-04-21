@@ -228,6 +228,7 @@ void MainWindow::stopBtnHandler() {
 void MainWindow::stepBtnHandler() {
     QStringList lines = codeEditor->toPlainText().split('\n', QString::SkipEmptyParts);
     if (currentLine < codeEditor->document()->blockCount()) {
+
         client_send(useParser());
         //client_send(jsonParser->writeRAMDataRequest());
         updateAppLog();
