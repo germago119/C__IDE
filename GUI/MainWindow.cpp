@@ -5,6 +5,7 @@
 #include <AST/CodeParser.hpp>
 #include "MainWindow.hpp"
 
+QString printString;
 
 MainWindow::MainWindow() {
 
@@ -40,14 +41,18 @@ MainWindow::MainWindow() {
     clearBtn = new QPushButton("Clear");
     stepBtn = new QPushButton("Step");
     stopBtn = new QPushButton("Stop");
+    printBtn = new QPushButton("StdOut");
+
     stepBtn->setEnabled(false);
     stopBtn->setEnabled(false);
+    printBtn->setEnabled(false);
 
     //Connect Btns
     connect(runBtn, SIGNAL(clicked()), this, SLOT(runBtnHandler()));
     connect(clearBtn, SIGNAL(clicked()), this, SLOT(clearBtnHandler()));
     connect(stepBtn, SIGNAL(clicked()), this, SLOT(stepBtnHandler()));
     connect(stopBtn, SIGNAL(clicked()), this, SLOT(stopBtnHandler()));
+    connect(printBtn, SIGNAL(clicked()), this, SLOT(usePrinter()));
 
     //Splitters
     auto *verticalSplitter = new QSplitter(Qt::Orientation::Vertical);
@@ -89,6 +94,7 @@ MainWindow::MainWindow() {
     titlehLayout->addWidget(runBtn);
     titlehLayout->addWidget(stopBtn);
     titlehLayout->addWidget(stepBtn);
+    titlehLayout->addWidget(printBtn);
     titlehLayout->addSpacing(650);
     titlehLayout->addWidget(ramlivelabel);
     titlehLayout->addSpacing(180);
@@ -148,7 +154,7 @@ MainWindow::MainWindow() {
 }
 
 MainWindow::~MainWindow() {
-    server->removeServer("mserver");
+    LocalServer::removeServer("mserver");
     delete jsonParser;
     delete model;
     delete server;
@@ -171,12 +177,14 @@ void MainWindow::runBtnHandler() {
             QMessageBox::information(nullptr, "Error", "Total malloc necessary to start execution");
         }
     }
+
     LOG_F(INFO, "Code execution started");
     updateAppLog();
     setModel();
     runBtn->setEnabled(false);
     stopBtn->setEnabled(true);
     stepBtn->setEnabled(true);
+    printBtn->setEnabled(true);
 }
 
 //METODO DEL BOTON CLEAR
@@ -302,29 +310,28 @@ void MainWindow::updateLiveRAMView(QJsonObject &json) {
     setModel();
     QJsonDocument doc(json);
     QJsonArray contents = json["Contents"].toArray();
-    for(int i = 0; i < contents.size(); ++i) {
-        QJsonDocument d(contents[i].toObject());
+    for (auto &&content : contents) {
+        QJsonDocument d(content.toObject());
         std::cout << d.toJson(QJsonDocument::Compact).toStdString() << std::endl;
         QList<QStandardItem *> column;
 
         QStandardItem *direction =
-                new QStandardItem(contents[i].toObject().value("Direction").toString());
+                new QStandardItem(content.toObject().value("Direction").toString());
         column.append(direction);
 
         QStandardItem *name =
-                new QStandardItem(contents[i].toObject().value("Name").toString("no name"));
+                new QStandardItem(content.toObject().value("Name").toString("no name"));
         column.append(name);
 
-        QVariant val = contents[i].toObject().value("Value").toVariant();
+        QVariant val = content.toObject().value("Value").toVariant();
         QString s = QString::fromStdString(val.toString().toStdString());
-        QStandardItem* value =
-                new QStandardItem(s);
+        printString = s;
+        auto *value = new QStandardItem(s);
         column.append(value);
 
-        int ref = contents[i].toObject().value("References").toInt(0);
+        int ref = content.toObject().value("References").toInt(0);
         QString ss = QString::fromStdString(std::to_string(ref));
-        QStandardItem *references =
-                new QStandardItem(ss);
+        auto *references = new QStandardItem(ss);
         column.append(references);
         model->appendRow(column);
     }
@@ -335,3 +342,8 @@ QJsonDocument MainWindow::useParser() {
     parseCode(codeEditor->toPlainText().toStdString());
     return getJSON();
 };
+
+void MainWindow::usePrinter() {
+    stdOut->append("Value: " + printString);
+    LOG_F(INFO, "StdOut used");
+}

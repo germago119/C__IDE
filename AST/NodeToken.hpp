@@ -45,10 +45,8 @@ enum TokenType {
 class NodeToken {
 
 public:
-    int line = 0;
     TokenType type;
     std::string value;
-    static int lineNumber;
 
     /**
     * @brief Constructor that needs a value.
@@ -56,7 +54,6 @@ public:
     */
     explicit NodeToken(std::string value);
 
-    NodeToken(std::string value, TokenType type);
 
 private:
     TokenType TokenLinter(std::string);

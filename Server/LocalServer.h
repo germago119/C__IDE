@@ -28,6 +28,7 @@
 #include <sstream>
 #include <DataStructures/MemoryNode.h>
 #include "Server/loguru.hpp"
+#include "AST/tinyexpr.h"
 
 class QLocalSocket;
 class LocalServer : public QLocalServer

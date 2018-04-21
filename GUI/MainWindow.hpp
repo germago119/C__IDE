@@ -48,6 +48,8 @@ private:
 
     QPushButton *runBtn;
 
+    QPushButton *printBtn;
+
     QPushButton *clearBtn;
 
     Highlighter *highlighter;
@@ -129,6 +131,9 @@ private slots:
      * @brief Call parseCode method so it can parse code from CodeEditor.
      */
     QJsonDocument useParser();
+
+    void usePrinter();
+
 };
 
 

@@ -4,7 +4,6 @@
 
 #include "NodeToken.hpp"
 
-int NodeToken::lineNumber = 1;
 
 TokenType NodeToken::TokenLinter(std::string token) {
     char types[][7] = {"int", "char", "long", "double", "float"};
@@ -19,7 +18,6 @@ TokenType NodeToken::TokenLinter(std::string token) {
     } else if (token == ";") {
         return STATEMENT_TERMINATOR;
     } else if (token == "\n") {
-        lineNumber++;
         return NEW_LINE;
     } else if (token == "{") {
         return OPEN_BRACKET;
@@ -65,11 +63,4 @@ TokenType NodeToken::TokenLinter(std::string token) {
 NodeToken::NodeToken(std::string value) {
     this->value = value;
     this->type = TokenLinter(value);
-    this->line = lineNumber;
-}
-
-NodeToken::NodeToken(std::string value, TokenType type) {
-    this->value = value;
-    this->type = type;
-    this->line = -1;
 }
