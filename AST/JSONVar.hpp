@@ -57,21 +57,6 @@ public:
     void put(std::string, int);
 
     /**
-    * @brief Set up the JSON when the value its a char.
-    */
-    void put(std::string, char);
-
-    /**
-    * @brief Set up the JSON when the value its a long.
-    */
-    void put(std::string, long);
-
-    /**
-    * @brief Set up the JSON when the value its a double.
-    */
-    void put(std::string, double);
-
-    /**
     * @brief Set up the JSON when the value its a string.
     */
     void put(std::string, std::string);
